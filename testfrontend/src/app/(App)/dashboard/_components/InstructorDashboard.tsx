@@ -174,7 +174,7 @@ const InstructorDashboard = () => {
 			</div>
 
 			{/* Recent Activity & Quick Actions */}
-			<Row className="g-4">
+			{/* <Row className="g-4">
 				<Col lg={6}>
 					<div className={styles.section}>
 						<h2>Recent Activity</h2>
@@ -236,7 +236,7 @@ const InstructorDashboard = () => {
 						</div>
 					</div>
 				</Col>
-			</Row>
+			</Row> */}
 		</div>
 	);
 };

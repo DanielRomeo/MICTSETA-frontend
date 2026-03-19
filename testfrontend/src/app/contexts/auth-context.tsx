@@ -8,7 +8,7 @@ import axios from 'axios';
 interface User {
     id: number;
     email: string;
-    role: 'student' | 'lecturer';  // ✓ matches schema
+    role: 'student' | 'lecturer' | 'instructor';  // ✓ matches schema
     firstName?: string;
     lastName?: string;
 }
@@ -136,10 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 			// navigate based on role:
 			// Navigate based on role
-			if (userData.role === 'lecturer') {
-				router.push('/dash');
+			if (userData.role === 'lecturer' || userData.role === 'instructor') {
+				router.push('/dasboard/instructor');
 			} else {
-				router.push('/dasbboard');
+				router.push('/dashboard');
 			}
 		} catch (error) {
 			console.error('Login error:', error);

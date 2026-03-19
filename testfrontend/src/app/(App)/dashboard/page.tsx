@@ -27,7 +27,7 @@ export default function DashboardPage() {
 	}
 
 	// Determine which dashboard to show based on user role
-	const userRole = user.role === 'instructor' || user.role === 'admin' ? 'instructor' : 'student';
+	const userRole = user.role === 'lecturer' ? 'instructor' : 'student';
 
 	if (isLoading) {
 		return <div>Loading...</div>;
