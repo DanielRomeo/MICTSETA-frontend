@@ -38,7 +38,7 @@ interface SignupFormData {
 const SignupComponent = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState('');
-	const [role, setRole] = useState<'student' | 'instructor'>('student');
+	const [role, setRole] = useState<'student' | 'lecturer'>('student');
 
 	const {
 		register,
@@ -221,14 +221,14 @@ const SignupComponent = () => {
 									</label>
 
 									<label
-										className={`${styles.roleCard} ${role === 'instructor' ? styles.roleCardActive : ''}`}
+										className={`${styles.roleCard} ${role === 'lecturer' ? styles.roleCardActive : ''}`}
 									>
 										<input
 											type="radio"
 											name="role"
-											value="instructor"
-											checked={role === 'instructor'}
-											onChange={() => setRole('instructor')}
+											value="lecturer"
+											checked={role === 'lecturer'}
+											onChange={() => setRole('lecturer')}
 										/>
 										<span className={styles.roleIcon}>🏫</span>
 										<span className={styles.roleTitle}>Instructor</span>

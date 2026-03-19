@@ -1,567 +1,234 @@
 'use client';
 import React, { useEffect, useState } from 'react';
-import ModernNavbar from '../_components/MainNavbar';
-import { Container, Navbar, Nav, Button, Row, Col, Card , Spinner} from 'react-bootstrap';
-import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import styles from '../_styles/homeComponent.module.scss';
-import ResponsiveImage from '../_components/ResponsiveImage';
 
+// ── Types ────────────────────────────────────────────────────
 interface FeaturedCourse {
-	id: number;
-	title: string;
-	slug: string;
-	shortDescription: string | null;
-	thumbnailUrl: string | null;
-	instructorFirstName: string | null;
-	instructorLastName: string | null;
-	enrollmentCount: number;
+  id: number;
+  title: string;
+  slug: string;
+  shortDescription: string | null;
+  instructorFirstName: string | null;
+  instructorLastName: string | null;
+  enrollmentCount: number;
+  lessonCount?: number;
 }
 
-interface PublicStats {
-	totalCourses: number;
-	totalStudents: number;
-}
+// ── Helpers ──────────────────────────────────────────────────
+const MOCK_COURSES: FeaturedCourse[] = [
+  {
+    id: 1,
+    title: 'Intro to Web Development',
+    slug: 'intro-web-dev',
+    shortDescription: 'HTML, CSS & JS from zero to deployed.',
+    instructorFirstName: 'Lena',
+    instructorLastName: 'Mbeki',
+    enrollmentCount: 342,
+    lessonCount: 3,
+  },
+  {
+    id: 2,
+    title: 'Python for Data Science',
+    slug: 'python-data-science',
+    shortDescription: 'Pandas, NumPy and your first model.',
+    instructorFirstName: 'Sipho',
+    instructorLastName: 'Nkosi',
+    enrollmentCount: 218,
+    lessonCount: 3,
+  },
+  {
+    id: 3,
+    title: 'UI/UX Fundamentals',
+    slug: 'ui-ux-fundamentals',
+    shortDescription: 'Design thinking, Figma & prototyping.',
+    instructorFirstName: 'Amara',
+    instructorLastName: 'Dube',
+    enrollmentCount: 190,
+    lessonCount: 3,
+  },
+];
 
+// ── Component ────────────────────────────────────────────────
 export default function HomeComponent() {
-	const router = useRouter();
-	const [stats, setStats] = useState<PublicStats>({ totalCourses: 200, totalStudents: 50000 });
-	const [featuredCourses, setFeaturedCourses] = useState<FeaturedCourse[]>([]);
-	const [loadingStats, setLoadingStats] = useState(true);
-	const [loadingCourses, setLoadingCourses] = useState(true);
-	const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const [courses, setCourses] = useState<FeaturedCourse[]>([]);
+  const [loading, setLoading] = useState(true);
 
-	// Animation variants
-	const fadeIn = {
-		hidden: { opacity: 0, y: 20 },
-		visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-	};
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch('/api/courses/public/featured', {
+          headers: { Authorization: `Bearer ${token || ''}` },
+        });
+        if (!res.ok) throw new Error('fetch failed');
+        const data = await res.json();
+        setCourses(Array.isArray(data) && data.length > 0 ? data : MOCK_COURSES);
+      } catch {
+        setCourses(MOCK_COURSES);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
-	const staggerChildren = {
-		hidden: { opacity: 0 },
-		visible: {
-			opacity: 1,
-			transition: {
-				staggerChildren: 0.2,
-			},
-		},
-	};
+  const steps = [
+    { num: '01', title: 'Enroll', desc: 'Pick a course created by a Lecturer. No payment. Just sign up.' },
+    { num: '02', title: 'Battle', desc: 'Work through lessons. Each lesson ends with a boss fight quiz.' },
+    { num: '03', title: 'Progress', desc: 'Beat the boss — the roadmap unlocks the next lesson automatically.' },
+    { num: '04', title: 'Slay the Dragon', desc: 'The final quiz is the Dragon. Win it and the course is yours.' },
+  ];
 
-	
-	useEffect(() => {
-		console.log('HomeComponent mounted, fetching data...');
-		 fetchfeaturedCourses();
-		 fetchStatistics();
-	}, []);
+  return (
+    <div className={styles.root}>
 
-	const fetchStatistics = async () => {
-		try {
-            setLoadingStats(true);
-            const token = localStorage.getItem('access_token');
+      {/* ── Navbar ── */}
+      <nav className={styles.nav}>
+        <a href="/" className={styles.navBrand}>
+          Macbase<span>Dragon</span>Slayer
+        </a>
+        <ul className={styles.navLinks}>
+          <li><a href="/courses">Courses</a></li>
+          <li><a href="/signup">Become a Lecturer</a></li>
+        </ul>
+        <button className={styles.navCta} onClick={() => router.push('/signup')}>
+          Sign Up
+        </button>
+      </nav>
 
-            // Fetch statistics 
-            const stats = await fetch('/api/courses/public/stats', {
-                headers: { 
-                    'Authorization': `Bearer ${token || ''}`,
-                },
-            });
-			// console.log('Stats response:', stats);
+      {/* ── Hero ── */}
+      <section className={styles.hero}>
+        <span className={styles.heroEyebrow}>⚔ MacbaseDragonSlayer Learner</span>
+        <h1 className={styles.heroTitle}>
+          Learn. Battle.<br /><em>Slay.</em>
+        </h1>
+        <p className={styles.heroSub}>
+          An educational platform where every lesson is a boss fight.
+          Pass quizzes, unlock your roadmap, and defeat the Dragon to master any course.
+        </p>
+        <div className={styles.heroActions}>
+          <button className={styles.btnPrimary} onClick={() => router.push('/courses')}>
+            Browse Courses
+          </button>
+          <button className={styles.btnGhost} onClick={() => router.push('/signup')}>
+            Create a Course
+          </button>
+        </div>
+        <div className={styles.stats}>
+          <div className={styles.statItem}>
+            <strong>3</strong>
+            <span>Lessons per Course</span>
+          </div>
+          <div className={styles.statItem}>
+            <strong>1</strong>
+            <span>Quiz per Lesson</span>
+          </div>
+          <div className={styles.statItem}>
+            <strong>🐉</strong>
+            <span>Final Dragon Boss</span>
+          </div>
+        </div>
+      </section>
 
-			if (!stats.ok) throw new Error('Failed to fetch statistics');
-			const statsData = await stats.json();
-			// console.log('Stats data:', statsData);
+      {/* ── How It Works ── */}
+      <section className={`${styles.howSection}`}>
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>The Loop</p>
+          <h2 className={styles.sectionTitle}>How it works</h2>
+          <p className={styles.sectionSub}>
+            Courses are built by Lecturers with AI assistance. Students enroll, fight bosses, and climb the roadmap.
+          </p>
+          <div className={styles.steps}>
+            {steps.map((s) => (
+              <div className={styles.step} key={s.num}>
+                <div className={styles.stepNum}>{s.num}</div>
+                <div className={styles.stepTitle}>{s.title}</div>
+                <p className={styles.stepDesc}>{s.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
+      {/* ── Dragon Boss Feature ── */}
+      <section className={`${styles.bossSection}`}>
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Final Challenge</p>
+          <h2 className={styles.sectionTitle}>Slay the Dragon</h2>
+          <div className={styles.bossCard}>
+            <div className={styles.bossEmoji}>🐉</div>
+            <div className={styles.bossText}>
+              <h3>The last quiz is a <span>Dragon</span>.</h3>
+              <p>
+                Every lesson ends with a boss fight — answer questions correctly to drain the boss's HP.
+                Get it wrong and you take damage. The final lesson unleashes the Dragon:
+                a harder, longer quiz. Defeat it and the entire course is marked complete.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-			setStats(statsData.body);
-		} catch (err: any) {
-			setError('Failed to load statistics: ' + err.message);
-			console.error(err);
-		} finally {
-			setLoadingStats(false);
-		}
-	}
-	const fetchfeaturedCourses = async () => {
-		try {			setLoadingCourses(true);
-			const token = localStorage.getItem('access_token');
-			const response = await fetch('/api/courses/public/featured', {
-				headers: { 
-					'Authorization': `Bearer ${token || ''}`,
-				},
-			});
-			if (!response.ok) throw new Error('Failed to fetch featured courses');
-			const data = await response.json();
-			console.log(data);
-			setFeaturedCourses(Array.isArray(data) ? data : []);
-		} catch (err: any) {
-			setError('Failed to load featured courses: ' + err.message);
-			console.error(err);
-		} finally {
-			setLoadingCourses(false);
-		}
-	}
+      {/* ── Featured Courses ── */}
+      <section className={styles.coursesSection}>
+        <div className={styles.section}>
+          <p className={styles.sectionLabel}>Available Now</p>
+          <h2 className={styles.sectionTitle}>Featured Courses</h2>
+          <p className={styles.sectionSub}>
+            Each course has exactly 3 lessons. Each lesson has an AI-generated quiz. The last is the Dragon.
+          </p>
 
+          {loading ? (
+            <p style={{ color: '#9999bb', fontSize: '0.8rem' }}>Loading courses…</p>
+          ) : (
+            <div className={styles.coursesGrid}>
+              {courses.map((c) => (
+                <div
+                  key={c.id}
+                  className={styles.courseCard}
+                  onClick={() => router.push(`/course/${c.slug || c.id}`)}
+                >
+                  <span className={styles.courseTag}>⚔ 3 Lessons</span>
+                  <div className={styles.courseTitle}>{c.title}</div>
+                  <div className={styles.courseMeta}>
+                    <span>
+                      {c.instructorFirstName && c.instructorLastName
+                        ? `${c.instructorFirstName} ${c.instructorLastName}`
+                        : 'Lecturer'}
+                    </span>
+                    <span>·</span>
+                    <span>{(c.enrollmentCount || 0).toLocaleString()} enrolled</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
+      {/* ── CTA ── */}
+      <section className={styles.ctaSection}>
+        <div className={styles.ctaBox}>
+          <h2>Ready to fight?</h2>
+          <p>Sign up free. Enroll in a course. Defeat your first boss today.</p>
+          <button className={styles.btnPrimary} onClick={() => router.push('/signup')}>
+            Start for Free
+          </button>
+        </div>
+      </section>
 
-	// Format numbers nicely
-	const formatStat = (n: number): string => {
-		if (n >= 1000) return `${Math.floor(n / 1000)}k+`;
-		return `${n}+`;
-	};
+      {/* ── Footer ── */}
+      <footer className={styles.footer}>
+        <div className={styles.footerBrand}>
+          Macbase<span>Dragon</span>Slayer Learner
+        </div>
+        <div className={styles.footerCredit}>
+          Developed by Daniel Mamphekgo @ MERTCITA HACKATHON
+        </div>
+      </footer>
 
-	return (
-		<div className={styles.container}>
-			
-			<ModernNavbar></ModernNavbar>
-
-			{/* Hero Section */}
-			<section className={styles.heroSection}>
-				<Container>
-					<Row className="align-items-center">
-						<Col lg={6}>
-							<motion.div
-								initial="hidden"
-								animate="visible"
-								variants={fadeIn}
-								className={styles.heroContent}
-							>
-								<h1>
-									Learning that puts <span className={styles.highlight}>you</span>{' '}
-									first
-								</h1>
-								<p>
-									Empower your future with personalized courses taught by expert
-									instructors. Track your progress, connect with tutors, and learn
-									at your own pace.
-								</p>
-								<div className={styles.heroCta}>
-									<Button
-										variant="success"
-										size="lg"
-										className={styles.primaryBtn}
-										onClick={() => router.push('/courses')}
-									>
-										Explore Courses
-									</Button>
-									<Button
-										variant="outline-light"
-										size="lg"
-										className={styles.secondaryBtn}
-										onClick={() => router.push('/tutor')}
-									>
-										Become a Tutor
-									</Button>
-								</div>
-								<div className={styles.statBadges}>
-									<div className={styles.statItem}>
-										<span className={styles.statNumber}>
-											{/* {loadingStats ? '...' : formatStat(stats.totalCourses)} */}
-										</span>
-										<span className={styles.statLabel}>Courses</span>
-									</div>
-									<div className={styles.statItem}>
-										<span className={styles.statNumber}>
-											{/* {loadingStats ? '...' : formatStat(stats.totalStudents)} */}
-										</span>
-										<span className={styles.statLabel}>Students</span>
-									</div>
-									<div className={styles.statItem}>
-										<span className={styles.statNumber}>96%</span>
-										<span className={styles.statLabel}>Satisfaction</span>
-									</div>
-								</div>
-							</motion.div>
-						</Col>
-						<Col lg={6}>
-							<motion.div
-								initial={{ opacity: 0, scale: 0.8 }}
-								animate={{ opacity: 1, scale: 1 }}
-								transition={{ duration: 0.8 }}
-								className={styles.heroImageContainer}
-							>
-								<div className={styles.heroImage}>
-									<ResponsiveImage
-										src="/pictureOfTeacher.jpg"
-										alt={`New Arrival`}
-										height={400}
-										width={100}
-									/>
-								</div>
-								
-							</motion.div>
-						</Col>
-					</Row>
-				</Container>
-			</section>
-
-			{/* Featured Courses Section */}
-			<section className={styles.featuredSection}>
-				<Container>
-					<motion.div
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.2 }}
-						variants={fadeIn}
-						className={styles.sectionHeader}
-					>
-						<h2>Featured Courses</h2>
-						<p>Start your learning journey with our most popular courses</p>
-					</motion.div>
-
-					<motion.div
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.2 }}
-						variants={staggerChildren}
-					>
-						<Row className="g-4">
-							
-							{loadingCourses
-								? 
-								 <div className={styles.loadingContainer}>
-									<Spinner animation="border" variant="primary" />
-								</div> :<></>
-							}
-							{
-							 !loadingCourses && featuredCourses.length > 0 ?
-								  featuredCourses.map((course) => (
-									
-										<Col md={4} key={course.id}>
-											{/* <motion.div variants={fadeIn}> */}
-												<Card className={styles.courseCard}>
-													<div className={styles.courseImageContainer}>
-														<ResponsiveImage
-															src={course.thumbnailUrl || '/pictureOfTeacher.jpg'}
-															alt={course.title}
-															height={400}
-															width={100}
-														/>
-														<div className={styles.courseOverlay}>
-															<Button
-																variant="light"
-																className={styles.previewBtn}
-																onClick={() =>
-																	router.push(`/course/${course.slug || course.id}`)
-																}
-															>
-																Preview
-															</Button>
-														</div>
-													</div>
-													<Card.Body>
-														<div className={styles.courseRating}>
-															<span className={styles.studentCount}>
-																({(course.enrollmentCount || 0).toLocaleString()}{' '}
-																students)
-															</span>
-														</div>
-														<Card.Title>{course.title}</Card.Title>
-														<Card.Text>
-															Instructor:{' '}
-															{course.instructorFirstName && course.instructorLastName
-																? `${course.instructorFirstName} ${course.instructorLastName}`
-																: 'IvyBrilliance Instructor'}
-														</Card.Text>
-														<div className={styles.cardFooter}>
-															<Button
-																variant="outline-success"
-																className={styles.courseBtn}
-																onClick={() =>
-																	router.push(`/course/${course.slug || course.id}`)
-																}
-															>
-																Learn More
-															</Button>
-														</div>
-													</Card.Body>
-												</Card>
-											{/* </motion.div> */}
-										</Col>
-								  ))
-								: // Fallback if no courses returned yet
-								  <>No courses available</>
-							}
-						</Row>
-					</motion.div>
-
-					<div className={styles.viewAllContainer}>
-						<Button
-							variant="link"
-							className={styles.viewAllBtn}
-							onClick={() => router.push('/courses')}
-						>
-							View All Courses <span className={styles.arrowIcon}>→</span>
-						</Button>
-					</div>
-				</Container>
-			</section>
-
-			{/* How It Works Section */}
-			<section className={styles.howItWorksSection}>
-				<Container>
-					<motion.div
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.2 }}
-						variants={fadeIn}
-						className={styles.sectionHeader}
-					>
-						<h2>How IvyBrilliance Works</h2>
-						<p>A simple process to start your learning journey</p>
-					</motion.div>
-
-					<motion.div
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.2 }}
-						variants={staggerChildren}
-						className={styles.stepsContainer}
-					>
-						<Row>
-							{[
-								{
-									number: '01',
-									title: 'Find Your Course',
-									description:
-										'Browse through our catalog of premium courses taught by industry experts.',
-								},
-								{
-									number: '02',
-									title: 'Learn at Your Pace',
-									description:
-										'Access video lectures, quizzes, and resources whenever and wherever you want.',
-								},
-								{
-									number: '03',
-									title: 'Track Progress',
-									description:
-										'Monitor your learning journey with detailed progress tracking.',
-								},
-								{
-									number: '04',
-									title: 'Get Certified',
-									description:
-										'Earn certificates that showcase your newly acquired skills to employers.',
-								},
-							].map((step, index) => (
-								<Col md={3} key={index}>
-									<motion.div variants={fadeIn} className={styles.stepCard}>
-										<div className={styles.stepNumber}>{step.number}</div>
-										<h3>{step.title}</h3>
-										<p>{step.description}</p>
-									</motion.div>
-								</Col>
-							))}
-						</Row>
-					</motion.div>
-				</Container>
-			</section>
-
-			{/* Become a course instructor */}
-			<section className={styles.becomeInstructorSection}>
-				<Container>
-					<Row className="align-items-center">
-						<Col lg={6}>
-							<motion.div
-								initial={{ opacity: 0, x: -50 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true, amount: 0.2 }}
-								transition={{ duration: 0.6 }}
-								className={styles.instructorImageContainer}
-							>
-								<ResponsiveImage
-									src="/classroom.jpg"
-									alt={`New Arrival`}
-									height={550}
-									width={450}
-								/>
-							</motion.div>
-						</Col>
-						<Col lg={6}>
-							<motion.div
-								initial={{ opacity: 0, x: 50 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true, amount: 0.2 }}
-								transition={{ duration: 0.6 }}
-								className={styles.instructorContent}
-							>
-								<h2>Share Your Knowledge</h2>
-								<h3>Become A Course Instructor</h3>
-								<p>
-									Join our community of expert instructors and share your
-									knowledge with students worldwide. Create engaging courses,
-									build your audience, and earn income while making a difference.
-								</p>
-
-								<div className={styles.instructorBenefits}>
-									{[
-										'Reach thousands of eager students',
-										'Flexible schedule on your terms',
-										'Competitive compensation',
-										'Full support from our team',
-									].map((benefit, index) => (
-										<div key={index} className={styles.benefitItem}>
-											<span className={styles.checkIcon}>✓</span>
-											{benefit}
-										</div>
-									))}
-								</div>
-
-								<Button
-									variant="success"
-									size="lg"
-									className={styles.instructorCta}
-									onClick={() => router.push('/signup')}
-								>
-									Apply as Instructor
-								</Button>
-							</motion.div>
-						</Col>
-					</Row>
-				</Container>
-			</section>
-
-			{/* Become a Tutor Section */}
-			<section className={styles.becomeTutorSection}>
-				<Container>
-					<Row className="align-items-center">
-						
-						<Col lg={6}>
-							<motion.div
-								initial={{ opacity: 0, x: 50 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true, amount: 0.2 }}
-								transition={{ duration: 0.6 }}
-								className={styles.tutorContent}
-							>
-								<h2>Share Your Knowledge In Real Time</h2>
-								<h3>Become a Tutor</h3>
-								<p>
-									Join us as a tutor and provide personalized, real-time support to students. Help them overcome challenges,
-									 deepen their understanding, and achieve their learning goals through one-on-one sessions while earning competitive compensation and flexible scheduling.
-								</p>
-
-								<div className={styles.tutorBenefits}>
-									{[
-										'Make a direct impact on student success',
-										'Flexible hours that fit your schedule',
-										'Competitive pay for your expertise',
-										'Supportive community of educators',
-									].map((benefit, index) => (
-										<div key={index} className={styles.benefitItem}>
-											<span className={styles.checkIcon}>✓</span>
-											{benefit}
-										</div>
-									))}
-								</div>
-
-								<Button
-									variant="success"
-									size="lg"
-									className={styles.tutorCta}
-									onClick={() => router.push('/tutor')}
-								>
-									Apply as Tutor
-								</Button>
-							</motion.div>
-						</Col>
-						<Col lg={6}>
-							<motion.div
-								initial={{ opacity: 0, x: -50 }}
-								whileInView={{ opacity: 1, x: 0 }}
-								viewport={{ once: true, amount: 0.2 }}
-								transition={{ duration: 0.6 }}
-								className={styles.tutorImageContainer}
-							>
-								<ResponsiveImage
-									src="/teacher.png"
-									alt={`New Arrival`}
-									height={550}
-									width={450}
-								/>
-							</motion.div>
-						</Col>
-					</Row>
-				</Container>
-			</section>
-
-			{/* Universities & Companies Section */}
-			<section className={styles.partnersSection}>
-				<Container>
-					<motion.div
-						initial="hidden"
-						whileInView="visible"
-						viewport={{ once: true, amount: 0.2 }}
-						variants={fadeIn}
-						className={styles.sectionHeader}
-					>
-						<h2>Trusted By Leading Organizations</h2>
-					</motion.div>
-
-					<motion.div
-						initial={{ opacity: 0 }}
-						whileInView={{ opacity: 1 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.8 }}
-						className={styles.partnersLogo}
-					>
-						<Row className={`align-items-center ${styles.partnersLogoRow}`}>
-							{[
-								'econlogo8-removebg-preview.png',
-								'mainlogo.png',
-								'unisalogo8-removebg-preview.png',
-							].map((logo, index) => (
-								<Col key={index} xs={6} md={2} className="text-center">
-									<ResponsiveImage
-										className={styles.image}
-										src={`/${logo}`}
-										alt="Partner logo"
-										width={120}
-										height={60}
-									/>
-								</Col>
-							))}
-						</Row>
-					</motion.div>
-				</Container>
-			</section>
-
-			{/* CTA Section */}
-			<section className={styles.ctaSection}>
-				<Container>
-					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						whileInView={{ opacity: 1, scale: 1 }}
-						viewport={{ once: true }}
-						transition={{ duration: 0.6 }}
-						className={styles.ctaCard}
-					>
-						<h2>Ready to Start Your Learning Journey?</h2>
-						<p>Join thousands of students already learning on IvyBrilliance</p>
-						<div className={styles.ctaButtons}>
-							<Button
-								variant="light"
-								size="lg"
-								className={styles.ctaBtn}
-								onClick={() => router.push('/courses')}
-							>
-								View All Courses
-							</Button>
-							<Button
-								variant="success"
-								size="lg"
-								className={styles.ctaBtnPrimary}
-								onClick={() => router.push('/signup')}
-							>
-								Sign Up Free
-							</Button>
-						</div>
-					</motion.div>
-				</Container>
-			</section>
-
-		</div>
-	);
+    </div>
+  );
 }
-

@@ -1,325 +1,111 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { DatabaseProvider } from '../database/database.provider';
 import {
-    lessons,
-    lessonProgress,
-    courseInstructors,
-    enrollments,
-} from '../database/schema';
-import { eq, and } from 'drizzle-orm';
-
-export type CreateLessonDto = {
-    courseId: number;
-    title: string;
-    orderIndex: number;
-    contentType: 'video' | 'text' | 'quiz' | 'attachment' | 'live';
-    videoUrl?: string;
-    contentText?: string;
-    durationMinutes?: number;
-    isFreePreview?: boolean;
-    instructorId?: number;
-};
-
-export type UpdateLessonDto = Partial<CreateLessonDto>;
-
-export type UpdateLessonProgressDto = {
-    completed?: boolean;
-    watchedPercentage?: number;
-};
+    Injectable,
+    HttpException,
+    HttpStatus,
+    ForbiddenException,
+    BadRequestException,
+} from '@nestjs/common';
+import { eq, and, count } from 'drizzle-orm';
+import { DatabaseProvider } from '../database/database.provider';
+import { lessons, courses, Lesson, NewLesson } from '../database/schema';
 
 @Injectable()
 export class LessonsService {
     constructor(private readonly databaseProvider: DatabaseProvider) {}
 
-    async create(lessonData: CreateLessonDto, currentUserId: number) {
+    async findByCourse(courseId: number): Promise<Lesson[]> {
+        const db = this.databaseProvider.getDb();
+        return db
+            .select()
+            .from(lessons)
+            .where(eq(lessons.courseId, courseId))
+            .orderBy(lessons.orderIndex);
+    }
+
+    async findById(id: number): Promise<Lesson> {
+        const db = this.databaseProvider.getDb();
+        const [lesson] = await db.select().from(lessons).where(eq(lessons.id, id));
+        if (!lesson) throw new HttpException('Lesson not found', HttpStatus.NOT_FOUND);
+        return lesson;
+    }
+
+    async create(
+        lecturerId: number,
+        data: { courseId: number; title: string; content?: string },
+    ): Promise<Lesson> {
         const db = this.databaseProvider.getDb();
 
-        // Verify instructor is assigned to this course
-        if (lessonData.instructorId) {
-            const [instructorAssignment] = await db
-                .select()
-                .from(courseInstructors)
-                .where(
-                    and(
-                        eq(courseInstructors.courseId, lessonData.courseId),
-                        eq(courseInstructors.userId, lessonData.instructorId)
-                    )
-                );
+        // Ownership check
+        const [course] = await db
+            .select()
+            .from(courses)
+            .where(eq(courses.id, data.courseId));
 
-            if (!instructorAssignment) {
-                throw new ForbiddenException(
-                    'Instructor must be assigned to this course first'
-                );
-            }
+        if (!course) throw new HttpException('Course not found', HttpStatus.NOT_FOUND);
+        if (course.lecturerId !== lecturerId) throw new ForbiddenException('Not your course');
+
+        // Max 3 lessons per course
+        const existing = await db
+            .select()
+            .from(lessons)
+            .where(eq(lessons.courseId, data.courseId));
+
+        if (existing.length >= 3) {
+            throw new BadRequestException('A course can have at most 3 lessons');
         }
+
+        const orderIndex = existing.length + 1;           // 1, 2, or 3
+        const isFinalBoss = orderIndex === 3;
 
         const [newLesson] = await db
             .insert(lessons)
             .values({
-                ...lessonData,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+                courseId: data.courseId,
+                title: data.title,
+                content: data.content ?? null,
+                orderIndex,
+                isFinalBoss,
             })
             .returning();
 
         return newLesson;
     }
 
-    async findByCourseId(courseId: number) {
+    async update(
+        id: number,
+        lecturerId: number,
+        data: { title?: string; content?: string },
+    ): Promise<Lesson> {
         const db = this.databaseProvider.getDb();
+        const lesson = await this.findById(id);
 
-        const courseLessons = await db
+        const [course] = await db
             .select()
-            .from(lessons)
-            .where(eq(lessons.courseId, courseId))
-            .orderBy(lessons.orderIndex);
+            .from(courses)
+            .where(eq(courses.id, lesson.courseId));
 
-        return courseLessons;
-    }
-
-    async findOne(lessonId: number) {
-        const db = this.databaseProvider.getDb();
-
-        const [lesson] = await db
-            .select()
-            .from(lessons)
-            .where(eq(lessons.id, lessonId));
-
-        if (!lesson) {
-            throw new NotFoundException('Lesson not found');
-        }
-
-        return lesson;
-    }
-
-    async update(lessonId: number, updateData: UpdateLessonDto) {
-        const db = this.databaseProvider.getDb();
-
-        // If updating instructor, verify they're assigned to the course
-        if (updateData.instructorId && updateData.courseId) {
-            const [instructorAssignment] = await db
-                .select()
-                .from(courseInstructors)
-                .where(
-                    and(
-                        eq(courseInstructors.courseId, updateData.courseId),
-                        eq(courseInstructors.userId, updateData.instructorId)
-                    )
-                );
-
-            if (!instructorAssignment) {
-                throw new ForbiddenException(
-                    'Instructor must be assigned to this course'
-                );
-            }
-        }
+        if (course.lecturerId !== lecturerId) throw new ForbiddenException('Not your course');
 
         const [updated] = await db
             .update(lessons)
-            .set({
-                ...updateData,
-                updatedAt: new Date(),
-            })
-            .where(eq(lessons.id, lessonId))
+            .set({ ...data, updatedAt: new Date() })
+            .where(eq(lessons.id, id))
             .returning();
-
-        if (!updated) {
-            throw new NotFoundException('Lesson not found');
-        }
 
         return updated;
     }
 
-    async delete(lessonId: number) {
+    async remove(id: number, lecturerId: number): Promise<void> {
         const db = this.databaseProvider.getDb();
+        const lesson = await this.findById(id);
 
-        // Delete associated lesson progress first
-        await db
-            .delete(lessonProgress)
-            .where(eq(lessonProgress.lessonId, lessonId));
-
-        const [deleted] = await db
-            .delete(lessons)
-            .where(eq(lessons.id, lessonId))
-            .returning();
-
-        if (!deleted) {
-            throw new NotFoundException('Lesson not found');
-        }
-
-        return deleted;
-    }
-
-    // Lesson Progress Methods
-    async updateProgress(
-        userId: number,
-        lessonId: number,
-        progressData: UpdateLessonProgressDto
-    ) {
-        const db = this.databaseProvider.getDb();
-
-        // Get the lesson to find course
-        const [lesson] = await db
+        const [course] = await db
             .select()
-            .from(lessons)
-            .where(eq(lessons.id, lessonId));
+            .from(courses)
+            .where(eq(courses.id, lesson.courseId));
 
-        if (!lesson) {
-            throw new NotFoundException('Lesson not found');
-        }
+        if (course.lecturerId !== lecturerId) throw new ForbiddenException('Not your course');
 
-        // Get enrollment
-        const [enrollment] = await db
-            .select()
-            .from(enrollments)
-            .where(
-                and(
-                    eq(enrollments.userId, userId),
-                    eq(enrollments.courseId, lesson.courseId)
-                )
-            );
-
-        if (!enrollment) {
-            throw new ForbiddenException('User not enrolled in this course');
-        }
-
-        // Check if progress record exists
-        const [existingProgress] = await db
-            .select()
-            .from(lessonProgress)
-            .where(
-                and(
-                    eq(lessonProgress.enrollmentId, enrollment.id),
-                    eq(lessonProgress.lessonId, lessonId)
-                )
-            );
-
-        if (existingProgress) {
-            // Update existing progress
-            const [updated] = await db
-                .update(lessonProgress)
-                .set({
-                    ...progressData,
-                    lastWatchedAt: new Date(),
-                })
-                .where(eq(lessonProgress.id, existingProgress.id))
-                .returning();
-
-            return updated;
-        } else {
-            // Create new progress record
-            const [newProgress] = await db
-                .insert(lessonProgress)
-                .values({
-                    enrollmentId: enrollment.id,
-                    lessonId: lessonId,
-                    completed: progressData.completed || false,
-                    watchedPercentage: progressData.watchedPercentage || 0,
-                    lastWatchedAt: new Date(),
-                })
-                .returning();
-
-            return newProgress;
-        }
-    }
-
-    async getLessonProgress(userId: number, lessonId: number) {
-        const db = this.databaseProvider.getDb();
-
-        // Get the lesson to find course
-        const [lesson] = await db
-            .select()
-            .from(lessons)
-            .where(eq(lessons.id, lessonId));
-
-        if (!lesson) {
-            throw new NotFoundException('Lesson not found');
-        }
-
-        // Get enrollment
-        const [enrollment] = await db
-            .select()
-            .from(enrollments)
-            .where(
-                and(
-                    eq(enrollments.userId, userId),
-                    eq(enrollments.courseId, lesson.courseId)
-                )
-            );
-
-        if (!enrollment) {
-            return null;
-        }
-
-        // Get progress
-        const [progress] = await db
-            .select()
-            .from(lessonProgress)
-            .where(
-                and(
-                    eq(lessonProgress.enrollmentId, enrollment.id),
-                    eq(lessonProgress.lessonId, lessonId)
-                )
-            );
-
-        return progress || null;
-    }
-
-    async getCourseProgress(userId: number, courseId: number) {
-        const db = this.databaseProvider.getDb();
-
-        // Get enrollment
-        const [enrollment] = await db
-            .select()
-            .from(enrollments)
-            .where(
-                and(
-                    eq(enrollments.userId, userId),
-                    eq(enrollments.courseId, courseId)
-                )
-            );
-
-        if (!enrollment) {
-            throw new ForbiddenException('User not enrolled in this course');
-        }
-
-        // Get all lessons for the course
-        const courseLessons = await db
-            .select()
-            .from(lessons)
-            .where(eq(lessons.courseId, courseId))
-            .orderBy(lessons.orderIndex);
-
-        // Get all progress records for this enrollment
-        const progressRecords = await db
-            .select()
-            .from(lessonProgress)
-            .where(eq(lessonProgress.enrollmentId, enrollment.id));
-
-        // Map progress to lessons
-        const lessonsWithProgress = courseLessons.map((lesson) => {
-            const progress = progressRecords.find(
-                (p) => p.lessonId === lesson.id
-            );
-            return {
-                ...lesson,
-                progress: progress || null,
-            };
-        });
-
-        // Calculate overall progress
-        const completedLessons = progressRecords.filter(
-            (p) => p.completed
-        ).length;
-        const totalLessons = courseLessons.length;
-        const overallProgress =
-            totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
-
-        return {
-            lessons: lessonsWithProgress,
-            overallProgress,
-            completedLessons,
-            totalLessons,
-        };
+        await db.delete(lessons).where(eq(lessons.id, id));
     }
 }

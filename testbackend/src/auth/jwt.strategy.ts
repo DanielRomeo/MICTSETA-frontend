@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -8,37 +8,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET || 'SECRET',
+            secretOrKey: process.env.JWT_SECRET || 'dragonslayer_secret',
         });
     }
 
     async validate(payload: any) {
-        return { 
-            id: payload.sub, 
-            email: payload.email,
-            role: payload.role,
-        };
-    }
-}
-
-@Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(
-    Strategy,
-    'jwt-refresh',
-) {
-    constructor() {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            secretOrKey: process.env.JWT_REFRESH_SECRET || 'REFRESH_SECRET',
-        });
-    }
-
-    async validate(payload: any) {
-        return { 
-            id: payload.sub, 
-            email: payload.email,
-            role: payload.role,
-        };
+        return { id: payload.sub, email: payload.email, role: payload.role };
     }
 }

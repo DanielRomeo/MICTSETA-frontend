@@ -4,12 +4,13 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback 
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
+// To this:
 interface User {
-	id: number;
-	email: string;
-	role: 'student' | 'instructor' | 'admin';
-	firstName?: string;
-	lastName?: string;
+    id: number;
+    email: string;
+    role: 'student' | 'lecturer';  // ✓ matches schema
+    firstName?: string;
+    lastName?: string;
 }
 
 interface AuthContextType {
@@ -108,16 +109,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	};
 
 	const login = async (email: string, password: string) => {
-		try {
-			const response = await axios.post('/api/auth/login', {
-				email,
-				password,
-			});
+    try {
+        const response = await axios.post('/api/auth/login', { email, password });
+        
+        console.log('Login response:', response.data); // ← add this temporarily
 
-			const accessToken = response.data.data.access_token;
-			if (!accessToken) {
-				throw new Error('No access token received from server');
-			}
+        // Handle both possible shapes
+        const accessToken = 
+            response.data?.access_token ||        // direct
+            response.data?.data?.access_token;    // wrapped
+
+        if (!accessToken) {
+            throw new Error('No access token received from server');
+        }
 
 			// Save token
 			localStorage.setItem('access_token', accessToken);
@@ -132,10 +136,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 			// navigate based on role:
 			// Navigate based on role
-			if (userData.role === 'instructor') {
-				router.push('/dashboard');
+			if (userData.role === 'lecturer') {
+				router.push('/dash');
 			} else {
-				router.push('/dashboard');
+				router.push('/dasbboard');
 			}
 		} catch (error) {
 			console.error('Login error:', error);

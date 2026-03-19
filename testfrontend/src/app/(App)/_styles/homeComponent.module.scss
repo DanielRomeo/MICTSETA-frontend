@@ -1,1158 +1,552 @@
-// homeComponent.module.scss
+// ============================================================
+//  MacbaseDragonSlayer — Design Tokens
+//  Hackathon Edition · Daniel Mamphekgo @ MERTCITA HACKATHON
+// ============================================================
 
-// ===============================
-// GREEN /  THEME (INSTRUCTOR)
-// ===============================
-// Colors
-$primary-green: #00bf63;
-$blue: #5271ff;
-$yellow: #f9c80e;
-$black: #000000;
-$dark-green: #24570f;
-$light-green: #b9e185;
+// ── Core Palette ────────────────────────────────────────────
+$void:          #000000;   // pure black — backgrounds, depth
+$obsidian:      #0a0a0f;   // near-black with blue tint — cards
+$onyx:          #111118;   // dark surface
+$charcoal:      #1a1a26;   // secondary surface
 
-// Custom brand colors
-$primary: $primary-green;
-$secondary: $blue;
-$accent: $yellow;
-$text-dark: #1a1a1a;
-$text-light: #ffffff;
-$gray-light: #f5f7fa;
-$gray-medium: #e2e8f0;
-$gray-dark: #718096;
-$gradient-start: #00bf63;
-$gradient-end: #24570f;
+$ghost:         #ffffff;   // pure white — headlines
+$silver:        #e2e2f0;   // body text
+$mist:          #9999bb;   // muted / placeholder text
+$fog:           #44445a;   // borders, dividers
 
-// ===============================
-// PINK / PURPLE THEME (Tutor)
-// ===============================
+$violet:        #7c3aed;   // primary brand purple
+$violet-light:  #9d5ff5;   // hover / lighter accent
+$violet-glow:   #a855f7;   // glow effects / gradients
+$violet-deep:   #4c1d95;   // deep purple — pressed / shadow
+$violet-muted:  #2d1b5e;   // subtle purple tint on surfaces
 
-// Core Colors
-$primary-purple: #7c3aed;     // Vibrant purple
-$soft-purple: #a78bfa;        // Lighter purple
-$pink: #ec4899;               // Strong pink
-$hot-pink: #db2777;           // Deeper pink
-$dark-purple: #3b0764;        // Deep background purple
+$acid:          #d946ef;   // magenta accent — boss / danger
+$acid-muted:    #7e2a8a;   // muted magenta
 
-// Custom Brand Colors
-$primary: $primary-purple;
-$secondary: $pink;
-$accent: $hot-pink;
+$success:       #22c55e;   // green — pass / victory
+$warning:       #f59e0b;   // amber — caution
 
-$text-dark: #1a1a1a;
-$text-light: #ffffff;
+// ── Gradients ────────────────────────────────────────────────
+$gradient-hero:   linear-gradient(135deg, $void 0%, $obsidian 60%, $violet-muted 100%);
+$gradient-card:   linear-gradient(160deg, $charcoal 0%, $obsidian 100%);
+$gradient-glow:   linear-gradient(90deg, $violet, $acid);
+$gradient-boss:   linear-gradient(135deg, $acid-muted 0%, $violet-deep 100%);
 
-$gray-light: #f8f7ff;         // Slight purple tint
-$gray-medium: #e9e6ff;
-$gray-dark: #6b7280;
+// ── Typography ───────────────────────────────────────────────
+$font-display:  'Syne', sans-serif;        // headers, big numbers
+$font-body:     'IBM Plex Mono', monospace; // body, code, labels
 
-// Gradient
-$gradient-start: #7c3aed;
-$gradient-end: #db2777;
+// ── Spacing Scale ─────────────────────────────────────────────
+$space-xs:  4px;
+$space-sm:  8px;
+$space-md:  16px;
+$space-lg:  32px;
+$space-xl:  64px;
+$space-2xl: 128px;
 
-// ===============================
+// ── Border Radius ─────────────────────────────────────────────
+$radius-sm:   4px;
+$radius-md:   8px;
+$radius-lg:   16px;
+$radius-pill: 999px;
 
-.partnerLogo .partnersLogo {
-	background-color: #00bf63;
-	border: 1px solid red;
+// ── Shadows ───────────────────────────────────────────────────
+$shadow-card:   0 0 0 1px $fog, 0 4px 32px rgba($violet, 0.08);
+$shadow-violet: 0 0 32px rgba($violet-glow, 0.35);
+$shadow-acid:   0 0 32px rgba($acid, 0.3);
+
+// ── Z-index ───────────────────────────────────────────────────
+$z-nav:     100;
+$z-overlay: 200;
+$z-modal:   300;
+
+// ============================================================
+//  Component Styles
+// ============================================================
+
+// @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+
+// *, *::before, *::after {
+//   box-sizing: border-box;
+//   margin: 0;
+//   padding: 0;
+// }
+
+// ── Root ──────────────────────────────────────────────────────
+.root {
+  background: $void;
+  color: $silver;
+  font-family: $font-body;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-// Global styles
-.container {
-	// background-color: green;
-	font-family:
-		'Inter',
-		-apple-system,
-		BlinkMacSystemFont,
-		'Segoe UI',
-		Roboto,
-		Oxygen,
-		Ubuntu,
-		Cantarell,
-		sans-serif;
-	color: $text-dark;
-	overflow-x: hidden;
+// ── Navbar ────────────────────────────────────────────────────
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: $z-nav;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-md $space-xl;
+  background: rgba($void, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid $fog;
+
+  @media (max-width: 768px) {
+    padding: $space-md $space-lg;
+  }
 }
 
-// Navbar styles
-.navbar {
-	background-color: rgba(0, 0, 0, 0.8);
-	backdrop-filter: blur(10px);
-	padding: 15px 0;
-	transition: all 0.3s ease;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.navBrand {
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: 1rem;
+  color: $ghost;
+  text-decoration: none;
+  letter-spacing: -0.02em;
 
-	.logoText {
-		font-size: 1.8rem;
-		font-weight: 700;
-		background: linear-gradient(to right, $primary-green, $light-green);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		margin-right: 1rem;
-	}
-
-	:global(.navbar-nav) {
-		.nav-link {
-			color: $text-light !important;
-			font-weight: 500;
-			padding: 0.5rem 1rem;
-			transition: all 0.2s ease;
-			position: relative;
-
-			&:hover {
-				color: $primary-green !important;
-
-				&::after {
-					width: 50%;
-				}
-			}
-
-			&::after {
-				content: '';
-				position: absolute;
-				bottom: 0;
-				left: 50%;
-				transform: translateX(-50%);
-				width: 0;
-				height: 2px;
-				background-color: $primary-green;
-				transition: width 0.3s ease;
-			}
-		}
-	}
-
-	.navButtons {
-		display: flex;
-		gap: 10px;
-		margin-left: 20px;
-
-		.loginBtn {
-			border: 1px solid rgba(255, 255, 255, 0.5);
-			color: white;
-
-			&:hover {
-				background-color: rgba(255, 255, 255, 0.1);
-				border-color: white;
-			}
-		}
-
-		.signupBtn {
-			background-color: $primary-green;
-			border: none;
-			padding: 8px 20px;
-
-			&:hover {
-				background-color: darken($primary-green, 10%);
-				transform: translateY(-2px);
-				box-shadow: 0 4px 8px rgba(0, 191, 99, 0.3);
-			}
-		}
-	}
+  span {
+    color: $violet-glow;
+  }
 }
 
-// Hero Section
-.heroSection {
-	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-	color: $text-light;
-	padding: 180px 0 100px;
-	position: relative;
-	overflow: hidden;
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: $space-lg;
+  list-style: none;
 
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-image: url('/images/grid-pattern.svg');
-		opacity: 0.05;
-	}
+  a {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $mist;
+    text-decoration: none;
+    transition: color 0.2s;
 
-	.heroContent {
-		position: relative;
-		h1 {
-			font-size: 3.5rem;
-			font-weight: 800;
-			line-height: 1.2;
-			margin-bottom: 1.5rem;
+    &:hover { color: $ghost; }
+  }
 
-			.highlight {
-				color: $primary-green;
-				position: relative;
-
-				&::after {
-					content: '';
-					position: absolute;
-					bottom: 5px;
-					left: 0;
-					width: 100%;
-					height: 8px;
-					background-color: rgba($primary-green, 0.2);
-					z-index: -1;
-				}
-			}
-		}
-
-		p {
-			font-size: 1.2rem;
-			line-height: 1.6;
-			color: rgba(255, 255, 255, 0.8);
-			margin-bottom: 2rem;
-			max-width: 540px;
-		}
-
-		.heroCta {
-			display: flex;
-			gap: 15px;
-			margin-bottom: 2.5rem;
-
-			.primaryBtn {
-				background-color: $primary-green;
-				border: none;
-				font-weight: 600;
-				padding: 12px 28px;
-				border-radius: 8px;
-				transition: all 0.3s ease;
-
-				&:hover {
-					background-color: darken($primary-green, 8%);
-					transform: translateY(-2px);
-					box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
-				}
-			}
-
-			.secondaryBtn {
-				border: 1.5px solid rgba(255, 255, 255, 0.6);
-				font-weight: 600;
-				padding: 12px 28px;
-				border-radius: 8px;
-				transition: all 0.3s ease;
-
-				&:hover {
-					background: linear-gradient(
-						135deg,
-						$gradient-start,
-						$gradient-end
-					);
-					transform: translateY(-2px);
-					// border: none;
-					// padding: 12px 30px;
-					// font-weight: 600;
-					// border-radius: 8px;
-					color: $text-light;
-					// transition: all 0.3s ease;
-					border-color: white;
-				}
-			}
-		}
-
-		.statBadges {
-			display: flex;
-			gap: 30px;
-
-			.statItem {
-				display: flex;
-				flex-direction: column;
-
-				.statNumber {
-					font-size: 1.8rem;
-					font-weight: 700;
-					color: $primary-green;
-				}
-
-				.statLabel {
-					font-size: 0.9rem;
-					color: rgba(255, 255, 255, 0.7);
-				}
-			}
-		}
-	}
-
-	.heroImageContainer {
-		position: relative;
-
-		.heroImage {
-			position: relative;
-			z-index: 1;
-			border-radius: 20px;
-			overflow: hidden;
-			box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
-		}
-
-		.floatingCard {
-			position: absolute;
-			bottom: 20px;
-			right: -30px;
-			background: rgba(255, 255, 255, 0.9);
-			backdrop-filter: blur(20px);
-			padding: 20px;
-			border-radius: 12px;
-			width: 280px;
-			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-			z-index: 2;
-
-			.progressIndicator {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				margin-bottom: 10px;
-
-				.progressBar {
-					width: 70%;
-					height: 8px;
-					background-color: rgba($gray-dark, 0.2);
-					border-radius: 4px;
-					overflow: hidden;
-
-					.progressFill {
-						width: 75%;
-						height: 100%;
-						background-color: $primary-green;
-						border-radius: 4px;
-					}
-				}
-
-				span {
-					font-size: 0.75rem;
-					font-weight: 600;
-					color: $primary-green;
-				}
-			}
-
-			h4 {
-				color: $text-dark;
-				font-size: 1rem;
-				font-weight: 600;
-				margin-bottom: 5px;
-			}
-
-			p {
-				color: $gray-dark;
-				font-size: 0.85rem;
-				margin: 0;
-			}
-		}
-	}
+  @media (max-width: 640px) { display: none; }
 }
 
-// Section Common Styles
-.sectionHeader {
-	text-align: center;
-	margin-bottom: 3rem;
+.navCta {
+  font-family: $font-body;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  background: $violet;
+  color: $ghost;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
 
-	h2 {
-		font-size: 2.5rem;
-		font-weight: 700;
-		color: $text-dark;
-		margin-bottom: 1rem;
-		position: relative;
-		display: inline-block;
-
-		&::after {
-			content: '';
-			position: absolute;
-			width: 80px;
-			height: 4px;
-			background-color: $primary-green;
-			bottom: -10px;
-			left: 50%;
-			transform: translateX(-50%);
-			border-radius: 2px;
-		}
-	}
-
-	p {
-		font-size: 1.1rem;
-		color: $gray-dark;
-		max-width: 600px;
-		margin: 0 auto;
-	}
+  &:hover {
+    background: $violet-light;
+    box-shadow: $shadow-violet;
+  }
 }
 
-// Featured Courses Section
-.featuredSection {
-	padding: 100px 0;
-	background-color: $gray-light;
+// ── Hero ──────────────────────────────────────────────────────
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: $space-2xl $space-lg $space-xl;
+  background: $gradient-hero;
+  position: relative;
+  overflow: hidden;
 
-	.courseCard {
-		border: 1px solid rgba(0, 0, 0, 0.05);
-		border-radius: 12px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-		height: 100%;
-
-		&:hover {
-			transform: translateY(-8px);
-			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-
-			.courseImageContainer {
-				.courseOverlay {
-					opacity: 1;
-				}
-			}
-		}
-
-		.courseImageContainer {
-			position: relative;
-			height: 200px;
-			overflow: hidden;
-
-			.courseImage {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				transition: transform 0.5s ease;
-			}
-
-			.courseOverlay {
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: rgba(0, 0, 0, 0.5);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				opacity: 0;
-				transition: all 0.3s ease;
-
-				.previewBtn {
-					font-weight: 600;
-					padding: 8px 20px;
-					border-radius: 6px;
-				}
-			}
-		}
-
-		.courseRating {
-			display: flex;
-			align-items: center;
-			margin-bottom: 10px;
-
-			.ratingStars {
-				color: $yellow;
-				margin-right: 8px;
-				font-size: 0.9rem;
-			}
-
-			.ratingNumber {
-				font-weight: 700;
-				margin-right: 5px;
-			}
-
-			.studentCount {
-				font-size: 0.8rem;
-				color: $gray-dark;
-			}
-		}
-
-		.cardFooter {
-			margin-top: 15px;
-
-			.courseBtn {
-				border-color: $primary-green;
-				color: $primary-green;
-				font-weight: 500;
-				width: 100%;
-
-				&:hover {
-					background-color: $primary-green;
-					color: white;
-				}
-			}
-		}
-	}
-
-	.viewAllContainer {
-		text-align: center;
-		margin-top: 3rem;
-
-		.viewAllBtn {
-			color: $primary-green;
-			font-weight: 600;
-			font-size: 1.1rem;
-			text-decoration: none;
-
-			&:hover {
-				text-decoration: none;
-
-				.arrowIcon {
-					transform: translateX(5px);
-				}
-			}
-
-			.arrowIcon {
-				transition: transform 0.3s ease;
-				display: inline-block;
-				margin-left: 5px;
-			}
-		}
-	}
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 60%, rgba($violet, 0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
 }
 
-// How It Works Section
-.howItWorksSection {
-	padding: 100px 0;
-	background-color: white;
-
-	.stepsContainer {
-		margin-top: 50px;
-	}
-
-	.stepCard {
-		padding: 30px 20px;
-		text-align: center;
-		position: relative;
-
-		.stepNumber {
-			font-size: 2.5rem;
-			font-weight: 800;
-			color: rgba($primary-green, 0.1);
-			position: absolute;
-			top: 0;
-			left: 50%;
-			transform: translateX(-50%);
-			z-index: 0;
-		}
-
-		h3 {
-			font-size: 1.4rem;
-			font-weight: 700;
-			margin: 1.5rem 0 1rem;
-			position: relative;
-			z-index: 1;
-		}
-
-		p {
-			color: $gray-dark;
-			font-size: 1rem;
-			line-height: 1.6;
-			margin-bottom: 0;
-			position: relative;
-			z-index: 1;
-		}
-	}
+.heroEyebrow {
+  display: inline-block;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $violet-light;
+  border: 1px solid $fog;
+  padding: 5px 14px;
+  border-radius: $radius-pill;
+  margin-bottom: $space-lg;
 }
 
-// Become an Instructor Section
-.becomeInstructorSection {
-	padding: 100px 0;
-	background-color: $gray-light;
+.heroTitle {
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: clamp(2.8rem, 7vw, 6rem);
+  line-height: 1.0;
+  color: $ghost;
+  letter-spacing: -0.03em;
+  margin-bottom: $space-md;
 
-	.instructorImageContainer {
-		position: relative;
-		border-radius: 20px;
-		overflow: hidden;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-
-		img {
-			width: 100%;
-			height: auto;
-			display: block;
-		}
-
-		&::after {
-			content: '';
-			position: absolute;
-			top: 30px;
-			left: 30px;
-			width: 100%;
-			height: 100%;
-			border: 4px solid $primary-green;
-			border-radius: 20px;
-			z-index: -1;
-		}
-	}
-
-	.instructorContent {
-		padding: 20px 0 20px 30px;
-
-		h2 {
-			font-size: 1.8rem;
-			color: $primary-green;
-			margin-bottom: 0.5rem;
-			font-weight: 700;
-		}
-
-		h3 {
-			font-size: 2.5rem;
-			font-weight: 800;
-			margin-bottom: 1.5rem;
-			color: $text-dark;
-		}
-
-		p {
-			font-size: 1.1rem;
-			line-height: 1.7;
-			color: $gray-dark;
-			margin-bottom: 2rem;
-		}
-
-		.instructorBenefits {
-			margin-bottom: 2.5rem;
-
-			.benefitItem {
-				display: flex;
-				align-items: center;
-				margin-bottom: 1rem;
-				font-size: 1.05rem;
-
-				.checkIcon {
-					color: $primary-green;
-					font-weight: bold;
-					margin-right: 10px;
-					font-size: 1.2rem;
-				}
-			}
-		}
-
-		.instructorCta {
-			background-color: $primary-green;
-			border: none;
-			padding: 12px 30px;
-			font-weight: 600;
-			border-radius: 8px;
-			transition: all 0.3s ease;
-
-			&:hover {
-				background-color: darken($primary-green, 8%);
-				transform: translateY(-3px);
-				box-shadow: 0 10px 25px rgba(0, 191, 99, 0.3);
-			}
-		}
-	}
+  em {
+    font-style: normal;
+    background: $gradient-glow;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 }
 
-// Become a TUTOR Section ( PURPLE / PINK THEME )
-.becomeTutorSection {
-	padding: 100px 0;
-	background-color: $gray-light;
-
-	.tutorImageContainer {
-		position: relative;
-		border-radius: 20px;
-		overflow: hidden;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-
-		img {
-			width: 100%;
-			height: auto;
-			display: block;
-		}
-
-		&::after {
-			content: '';
-			position: absolute;
-			top: 30px;
-			left: 30px;
-			width: 100%;
-			height: 100%;
-			border: 4px solid $primary-purple;
-			border-radius: 20px;
-			z-index: -1;
-		}
-	}
-
-	.tutorContent {
-		padding: 20px 0 20px 30px;
-
-		h2 {
-			font-size: 1.8rem;
-			color: $primary-purple;
-			margin-bottom: 0.5rem;
-			font-weight: 700;
-		}
-
-		h3 {
-			font-size: 2.5rem;
-			font-weight: 800;
-			margin-bottom: 1.5rem;
-			color: $text-dark;
-		}
-
-		p {
-			font-size: 1.1rem;
-			line-height: 1.7;
-			color: $gray-dark;
-			margin-bottom: 2rem;
-		}
-
-		.tutorBenefits {
-			margin-bottom: 2.5rem;
-
-			.benefitItem {
-				display: flex;
-				align-items: center;
-				margin-bottom: 1rem;
-				font-size: 1.05rem;
-
-				.checkIcon {
-					color: $pink;
-					font-weight: bold;
-					margin-right: 10px;
-					font-size: 1.2rem;
-				}
-			}
-		}
-
-		.tutorCta {
-			background: linear-gradient(
-				135deg,
-				$gradient-start,
-				$gradient-end
-			);
-			border: none;
-			padding: 12px 30px;
-			font-weight: 600;
-			border-radius: 8px;
-			color: $text-light;
-			transition: all 0.3s ease;
-
-			&:hover {
-				background: linear-gradient(
-					135deg,
-					darken($gradient-start, 8%),
-					darken($gradient-end, 8%)
-				);
-				transform: translateY(-3px);
-				box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
-			}
-		}
-	}
+.heroSub {
+  max-width: 520px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: $mist;
+  margin: 0 auto $space-xl;
 }
 
-// Testimonials Section
-.testimonialsSection {
-	padding: 100px 0;
-	background-color: white;
-
-	.testimonialCard {
-		background-color: white;
-		border-radius: 16px;
-		padding: 30px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-		height: 100%;
-		position: relative;
-		transition: all 0.3s ease;
-
-		&:hover {
-			transform: translateY(-10px);
-			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-		}
-
-		.quoteIcon {
-			font-size: 5rem;
-			position: absolute;
-			top: 10px;
-			left: 20px;
-			color: rgba($primary-green, 0.1);
-			font-family: 'Georgia', serif;
-			line-height: 1;
-		}
-
-		.quote {
-			font-size: 1.05rem;
-			line-height: 1.7;
-			color: $gray-dark;
-			margin-bottom: 20px;
-			position: relative;
-			z-index: 1;
-		}
-
-		.testimonialProfile {
-			display: flex;
-			align-items: center;
-
-			.avatarContainer {
-				margin-right: 15px;
-
-				.avatar {
-					width: 50px;
-					height: 50px;
-					border-radius: 50%;
-					object-fit: cover;
-				}
-			}
-
-			.profileInfo {
-				h4 {
-					font-size: 1.1rem;
-					font-weight: 700;
-					margin-bottom: 3px;
-					color: $text-dark;
-				}
-
-				p {
-					font-size: 0.9rem;
-					color: $gray-dark;
-					margin: 0;
-				}
-			}
-		}
-	}
+.heroActions {
+  display: flex;
+  gap: $space-md;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
-// Partners Section
-.partnersSection {
-	// padding: 80px 0;
-	background-color: $gray-light;
+.btnPrimary {
+  font-family: $font-body;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 13px 28px;
+  background: $violet;
+  color: $ghost;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
 
-	.partnersLogo {
-		margin-top: 2rem;
-		// border: 1px solid black;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-
-		.partnerLogo {
-			// border: 1px solid red;
-			opacity: 0.7;
-			filter: grayscale(100%);
-			transition: all 0.3s ease;
-			max-width: 100%;
-			height: auto;
-
-			&:hover {
-				opacity: 1;
-				filter: grayscale(0%);
-			}
-			.image {
-				// border: 1px solid blue;
-			}
-
-			// .partnersLogoRow{
-			// 	border: 3px solid blue;
-			// }
-		}
-	}
+  &:hover {
+    background: $violet-light;
+    box-shadow: $shadow-violet;
+    transform: translateY(-1px);
+  }
 }
 
-// CTA Section
+.btnGhost {
+  font-family: $font-body;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  background: transparent;
+  color: $silver;
+  border: 1px solid $fog;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover {
+    border-color: $violet-glow;
+    color: $ghost;
+  }
+}
+
+// ── Stats Bar ─────────────────────────────────────────────────
+.stats {
+  display: flex;
+  gap: $space-xl;
+  justify-content: center;
+  margin-top: $space-xl;
+  flex-wrap: wrap;
+}
+
+.statItem {
+  text-align: center;
+
+  strong {
+    display: block;
+    font-family: $font-display;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: $ghost;
+  }
+
+  span {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: $mist;
+  }
+}
+
+// ── Section shell ─────────────────────────────────────────────
+.section {
+  padding: $space-xl $space-lg;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sectionLabel {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: $violet-light;
+  margin-bottom: $space-sm;
+}
+
+.sectionTitle {
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  color: $ghost;
+  letter-spacing: -0.02em;
+  margin-bottom: $space-md;
+}
+
+.sectionSub {
+  font-size: 0.85rem;
+  color: $mist;
+  line-height: 1.7;
+  max-width: 480px;
+  margin-bottom: $space-xl;
+}
+
+// ── How It Works ──────────────────────────────────────────────
+.howSection {
+  background: $obsidian;
+  border-top: 1px solid $fog;
+  border-bottom: 1px solid $fog;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $space-lg;
+}
+
+.step {
+  padding: $space-lg;
+  border: 1px solid $fog;
+  border-radius: $radius-md;
+  background: $charcoal;
+  position: relative;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: $violet;
+  }
+}
+
+.stepNum {
+  font-family: $font-display;
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba($violet, 0.2);
+  line-height: 1;
+  margin-bottom: $space-sm;
+}
+
+.stepTitle {
+  font-family: $font-display;
+  font-weight: 700;
+  font-size: 1rem;
+  color: $ghost;
+  margin-bottom: $space-xs;
+}
+
+.stepDesc {
+  font-size: 0.78rem;
+  color: $mist;
+  line-height: 1.6;
+}
+
+// ── Boss Battle Feature ────────────────────────────────────────
+.bossSection {
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 60% at 80% 50%, rgba($acid, 0.08) 0%, transparent 65%);
+    pointer-events: none;
+  }
+}
+
+.bossCard {
+  border: 1px solid rgba($acid, 0.3);
+  border-radius: $radius-lg;
+  padding: $space-xl;
+  background: $gradient-boss;
+  display: flex;
+  align-items: center;
+  gap: $space-xl;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.bossEmoji {
+  font-size: 5rem;
+  flex-shrink: 0;
+  filter: drop-shadow($shadow-acid);
+}
+
+.bossText {
+  flex: 1;
+
+  h3 {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 1.8rem;
+    color: $ghost;
+    letter-spacing: -0.02em;
+    margin-bottom: $space-sm;
+
+    span { color: $acid; }
+  }
+
+  p {
+    font-size: 0.85rem;
+    color: $silver;
+    line-height: 1.7;
+    max-width: 440px;
+  }
+}
+
+// ── Courses Grid ──────────────────────────────────────────────
+.coursesSection {
+  background: $obsidian;
+  border-top: 1px solid $fog;
+  border-bottom: 1px solid $fog;
+}
+
+.coursesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: $space-md;
+}
+
+.courseCard {
+  background: $charcoal;
+  border: 1px solid $fog;
+  border-radius: $radius-md;
+  padding: $space-lg;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $violet;
+    transform: translateY(-2px);
+  }
+}
+
+.courseTag {
+  display: inline-block;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: $violet-light;
+  border: 1px solid rgba($violet, 0.4);
+  padding: 3px 10px;
+  border-radius: $radius-pill;
+  margin-bottom: $space-sm;
+}
+
+.courseTitle {
+  font-family: $font-display;
+  font-weight: 700;
+  font-size: 1rem;
+  color: $ghost;
+  margin-bottom: $space-xs;
+}
+
+.courseMeta {
+  font-size: 0.72rem;
+  color: $mist;
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+}
+
+// ── CTA ───────────────────────────────────────────────────────
 .ctaSection {
-	padding: 100px 0;
-	background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
-
-	.ctaCard {
-		background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
-		border-radius: 20px;
-		padding: 60px 40px;
-		text-align: center;
-		color: white;
-		box-shadow: 0 20px 50px rgba(0, 191, 99, 0.2);
-
-		h2 {
-			font-size: 2.5rem;
-			font-weight: 800;
-			margin-bottom: 1rem;
-		}
-
-		p {
-			font-size: 1.2rem;
-			margin-bottom: 2rem;
-			opacity: 0.9;
-		}
-
-		.ctaButtons {
-			display: flex;
-			gap: 20px;
-			justify-content: center;
-			flex-wrap: wrap;
-
-			.ctaBtn {
-				padding: 12px 30px;
-				font-weight: 600;
-				border-radius: 8px;
-				transition: all 0.3s ease;
-
-				&:hover {
-					transform: translateY(-3px);
-					box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-				}
-			}
-
-			.ctaBtnPrimary {
-				background-color: white;
-				color: $primary-green;
-				border: none;
-
-				&:hover {
-					background-color: white;
-					color: darken($primary-green, 10%);
-				}
-			}
-		}
-	}
+  text-align: center;
+  padding: $space-xl $space-lg;
 }
 
-// Footer
+.ctaBox {
+  max-width: 560px;
+  margin: 0 auto;
+  border: 1px solid $fog;
+  border-radius: $radius-lg;
+  padding: $space-xl;
+  background: $gradient-card;
+
+  h2 {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 2rem;
+    color: $ghost;
+    letter-spacing: -0.02em;
+    margin-bottom: $space-sm;
+  }
+
+  p {
+    font-size: 0.82rem;
+    color: $mist;
+    margin-bottom: $space-lg;
+    line-height: 1.7;
+  }
+}
+
+// ── Footer ────────────────────────────────────────────────────
 .footer {
-	background-color: #111827;
-	color: $text-light;
-	padding: 80px 0 30px;
+  border-top: 1px solid $fog;
+  padding: $space-lg $space-xl;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: $space-md;
 
-	.footerBrand {
-		.footerLogo {
-			font-size: 2rem;
-			font-weight: 800;
-			background: linear-gradient(to right, $primary-green, $light-green);
-			-webkit-background-clip: text;
-			-webkit-text-fill-color: transparent;
-			margin-bottom: 1rem;
-			display: inline-block;
-		}
-
-		p {
-			color: rgba(255, 255, 255, 0.7);
-			font-size: 1rem;
-			line-height: 1.6;
-			margin-bottom: 1.5rem;
-		}
-
-		.socialIcons {
-			display: flex;
-			gap: 15px;
-
-			a {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 40px;
-				height: 40px;
-				background-color: rgba(255, 255, 255, 0.1);
-				border-radius: 50%;
-				color: white;
-				transition: all 0.3s ease;
-
-				&:hover {
-					background-color: $primary-green;
-					transform: translateY(-3px);
-				}
-			}
-		}
-	}
-
-	.footerLinks {
-		h4 {
-			font-size: 1.2rem;
-			font-weight: 600;
-			margin-bottom: 1.5rem;
-			color: white;
-			position: relative;
-			display: inline-block;
-
-			&::after {
-				content: '';
-				position: absolute;
-				width: 30px;
-				height: 2px;
-				background-color: $primary-green;
-				bottom: -8px;
-				left: 0;
-			}
-		}
-
-		ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-
-			li {
-				margin-bottom: 12px;
-
-				a {
-					color: rgba(255, 255, 255, 0.7);
-					text-decoration: none;
-					transition: all 0.2s ease;
-					font-size: 0.95rem;
-
-					&:hover {
-						color: $primary-green;
-						padding-left: 5px;
-					}
-				}
-			}
-		}
-	}
-
-	.footerBottom {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding-top: 40px;
-		margin-top: 60px;
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		flex-wrap: wrap;
-		gap: 20px;
-
-		p {
-			color: rgba(255, 255, 255, 0.5);
-			font-size: 0.9rem;
-			margin: 0;
-		}
-
-		.footerBottomLinks {
-			display: flex;
-			gap: 20px;
-
-			a {
-				color: rgba(255, 255, 255, 0.5);
-				text-decoration: none;
-				font-size: 0.9rem;
-				transition: all 0.2s ease;
-
-				&:hover {
-					color: $primary-green;
-				}
-			}
-		}
-	}
+  @media (max-width: 640px) {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
-// Media Queries for Responsiveness
-@media (max-width: 991px) {
-	.navbar {
-		padding: 10px 0;
+.footerBrand {
+  font-family: $font-display;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: $ghost;
 
-		.navButtons {
-			margin-top: 15px;
-			margin-left: 0;
-			width: 100%;
-			justify-content: center;
-		}
-	}
-
-	.heroSection {
-		padding: 150px 0 80px;
-
-		.heroContent {
-			text-align: center;
-			margin-bottom: 50px;
-
-			h1 {
-				font-size: 2.8rem;
-			}
-
-			p {
-				margin-left: auto;
-				margin-right: auto;
-			}
-
-			.heroCta {
-				justify-content: center;
-			}
-
-			.statBadges {
-				justify-content: center;
-			}
-		}
-	}
-
-	.heroImageContainer {
-		.floatingCard {
-			right: 50%;
-			transform: translateX(50%);
-		}
-	}
-
-	.becomeInstructorSection {
-		.instructorImageContainer {
-			margin-bottom: 50px;
-		}
-
-		.instructorContent {
-			padding-left: 0;
-			text-align: center;
-
-			.instructorBenefits {
-				.benefitItem {
-					justify-content: center;
-				}
-			}
-		}
-	}
+  span { color: $violet-glow; }
 }
 
-@media (max-width: 767px) {
-	.heroSection {
-		.heroContent {
-			h1 {
-				font-size: 2.3rem;
-			}
-		}
-	}
-
-	.sectionHeader {
-		h2 {
-			font-size: 2rem;
-		}
-	}
-
-	.testimonialCard {
-		margin-bottom: 30px;
-	}
-
-	.ctaSection {
-		.ctaCard {
-			padding: 40px 20px;
-
-			h2 {
-				font-size: 2rem;
-			}
-		}
-	}
-
-	.footer {
-		.footerBrand,
-		.footerLinks {
-			margin-bottom: 40px;
-		}
-
-		.footerBottom {
-			flex-direction: column;
-			text-align: center;
-
-			.footerBottomLinks {
-				justify-content: center;
-			}
-		}
-	}
+.footerCredit {
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  color: $fog;
+  text-transform: uppercase;
 }
 
-@media (max-width: 575px) {
-	.heroSection {
-		.heroContent {
-			h1 {
-				font-size: 2rem;
-			}
-
-			.heroCta {
-				flex-direction: column;
-				width: 100%;
-
-				.primaryBtn,
-				.secondaryBtn {
-					width: 100%;
-				}
-			}
-
-			.statBadges {
-				flex-direction: column;
-				align-items: center;
-				gap: 15px;
-			}
-		}
-	}
-
-	.stepCard {
-		margin-bottom: 30px;
-	}
-
-	.partnersLogo {
-		.partnerLogo {
-			margin-bottom: 20px;
-		}
-	}
+// ── Divider ───────────────────────────────────────────────────
+.divider {
+  height: 1px;
+  background: $fog;
+  width: 100%;
 }
