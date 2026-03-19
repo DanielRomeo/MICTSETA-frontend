@@ -1,0 +1,619 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap');
+
+// ── Tokens (matches dragonslayer.module.scss) ─────────────────────────────
+$void:         #000000;
+$obsidian:     #0a0a0f;
+$onyx:         #111118;
+$charcoal:     #1a1a26;
+$fog:          #44445a;
+$mist:         #9999bb;
+$silver:       #e2e2f0;
+$ghost:        #ffffff;
+
+$violet:       #7c3aed;
+$violet-light: #9d5ff5;
+$violet-glow:  #a855f7;
+$violet-deep:  #4c1d95;
+$violet-muted: #2d1b5e;
+
+$acid:         #d946ef;
+$acid-muted:   #7e2a8a;
+
+$success:      #22c55e;
+$warning:      #f59e0b;
+
+$font-display: 'Syne', sans-serif;
+$font-body:    'IBM Plex Mono', monospace;
+
+// ── Root ──────────────────────────────────────────────────────────────────
+.root {
+    background: $void;
+    color: $silver;
+    font-family: $font-body;
+    min-height: 100vh;
+}
+
+// ── Hero ──────────────────────────────────────────────────────────────────
+.hero {
+    background: linear-gradient(135deg, $void 0%, $obsidian 60%, $violet-muted 100%);
+    border-bottom: 1px solid $fog;
+    padding: 48px 32px 40px;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(ellipse 50% 80% at 80% 50%, rgba($violet, 0.12) 0%, transparent 65%);
+        pointer-events: none;
+    }
+}
+
+.heroInner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.heroText { flex: 1; min-width: 280px; }
+
+.heroEyebrow {
+    display: inline-block;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $violet-light;
+    border: 1px solid $fog;
+    padding: 4px 12px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+}
+
+.heroTitle {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: $ghost;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    margin-bottom: 12px;
+}
+
+.heroDesc {
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: $mist;
+    max-width: 560px;
+    margin-bottom: 20px;
+}
+
+.heroBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.badge {
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    color: $silver;
+    background: rgba($fog, 0.3);
+    border: 1px solid $fog;
+    border-radius: 999px;
+    padding: 4px 12px;
+}
+
+// ── Progress ring ──────────────────────────────────────────────────────────
+.progressBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.progressRing {
+    width: 90px;
+    height: 90px;
+}
+
+.ringBg {
+    fill: none;
+    stroke: $charcoal;
+    stroke-width: 6;
+}
+
+.ringFill {
+    fill: none;
+    stroke: $violet-glow;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.6s ease;
+    filter: drop-shadow(0 0 6px rgba($violet-glow, 0.5));
+}
+
+.ringNum {
+    font-family: $font-display;
+    font-size: 16px;
+    font-weight: 800;
+    fill: $ghost;
+}
+
+.ringSub {
+    font-size: 10px;
+    fill: $mist;
+    font-family: $font-body;
+}
+
+.progressLabel {
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $mist;
+}
+
+// ── Enroll button ──────────────────────────────────────────────────────────
+.enrollBtn {
+    font-family: $font-body;
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    background: $violet;
+    color: $ghost;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    align-self: center;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    white-space: nowrap;
+
+    &:hover {
+        background: $violet-light;
+        box-shadow: 0 0 24px rgba($violet-glow, 0.4);
+        transform: translateY(-1px);
+    }
+}
+
+// ── Body layout ───────────────────────────────────────────────────────────
+.body {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 220px);
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ── Roadmap column ─────────────────────────────────────────────────────────
+.roadmapCol {
+    border-right: 1px solid $fog;
+    padding: 40px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+
+    @media (max-width: 768px) {
+        border-right: none;
+        border-bottom: 1px solid $fog;
+        padding: 32px 20px;
+    }
+}
+
+.roadmapHeading {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: $mist;
+    margin-bottom: 32px;
+}
+
+// ── Roadmap nodes ──────────────────────────────────────────────────────────
+.roadmap {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    position: relative;
+}
+
+.roadmapStep {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 12px;
+}
+
+// ── Vertical connector line ────────────────────────────────────────────────
+.connector {
+    position: absolute;
+    left: 47px;
+    top: -40px;
+    width: 2px;
+    height: 40px;
+    background: $fog;
+    transition: background 0.4s;
+
+    &.connectorActive {
+        background: linear-gradient(to bottom, $violet-glow, $violet);
+    }
+}
+
+// ── Node circle ────────────────────────────────────────────────────────────
+.roadmapNode {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid $fog;
+    background: $obsidian;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: $font-display;
+
+    &:disabled { cursor: not-allowed; opacity: 0.5; }
+
+    &:not(:disabled):hover {
+        border-color: $violet;
+        transform: scale(1.08);
+        box-shadow: 0 0 20px rgba($violet, 0.4);
+    }
+}
+
+.nodeSelected {
+    border-color: $violet-glow !important;
+    box-shadow: 0 0 24px rgba($violet-glow, 0.5) !important;
+    background: $violet-deep !important;
+}
+
+.node_passed {
+    border-color: $success;
+    background: rgba($success, 0.15);
+    box-shadow: 0 0 12px rgba($success, 0.3);
+}
+
+.node_available {
+    border-color: $violet;
+    background: rgba($violet, 0.15);
+}
+
+.node_locked {
+    border-color: $fog;
+    opacity: 0.45;
+}
+
+.nodeBoss {
+    width: 56px;
+    height: 56px;
+    border-color: $acid !important;
+    background: rgba($acid, 0.12) !important;
+    box-shadow: 0 0 20px rgba($acid, 0.25) !important;
+
+    &:not(:disabled):hover {
+        box-shadow: 0 0 32px rgba($acid, 0.5) !important;
+    }
+}
+
+.nodeIcon {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.nodeNum {
+    font-family: $font-display;
+    font-size: 1rem;
+    font-weight: 800;
+    color: $ghost;
+}
+
+// ── Pulse animation ────────────────────────────────────────────────────────
+.pulse {
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid $violet;
+    animation: pulsing 2s ease-out infinite;
+    pointer-events: none;
+}
+
+@keyframes pulsing {
+    0%   { transform: scale(1); opacity: 0.8; }
+    70%  { transform: scale(1.4); opacity: 0; }
+    100% { transform: scale(1.4); opacity: 0; }
+}
+
+// ── Node label ────────────────────────────────────────────────────────────
+.nodeLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 60px;
+    margin-top: -44px;
+    padding-bottom: 8px;
+    min-height: 48px;
+    justify-content: center;
+}
+
+.nodeName {
+    font-size: 0.78rem;
+    color: $silver;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.bossLabel {
+    color: $acid;
+    font-weight: 600;
+}
+
+.nodeScore {
+    font-size: 0.65rem;
+    color: $success;
+    letter-spacing: 0.05em;
+}
+
+.nodeLocked {
+    font-size: 0.62rem;
+    color: $fog;
+    letter-spacing: 0.05em;
+}
+
+// ── Overall progress bar ──────────────────────────────────────────────────
+.progressBar {
+    width: 100%;
+    height: 3px;
+    background: $charcoal;
+    border-radius: 2px;
+    margin-top: 24px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, $violet, $violet-glow);
+    border-radius: 2px;
+    transition: width 0.6s ease;
+    box-shadow: 0 0 8px rgba($violet-glow, 0.5);
+}
+
+.progressText {
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: $mist;
+    margin-top: 8px;
+}
+
+// ── Panel column ──────────────────────────────────────────────────────────
+.panelCol {
+    padding: 40px 40px;
+
+    @media (max-width: 768px) {
+        padding: 28px 20px;
+    }
+}
+
+// ── Lesson panel ──────────────────────────────────────────────────────────
+.lessonPanel {
+    border: 1px solid $fog;
+    border-radius: 12px;
+    background: $obsidian;
+    padding: 36px;
+    max-width: 640px;
+    transition: border-color 0.3s;
+
+    &:hover { border-color: rgba($violet, 0.4); }
+}
+
+.panelBoss {
+    border-color: rgba($acid, 0.4) !important;
+    background: linear-gradient(160deg, $obsidian 0%, #1a0a20 100%) !important;
+
+    &:hover { border-color: rgba($acid, 0.7) !important; }
+}
+
+.panelHeader { margin-bottom: 20px; }
+
+.panelMeta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.panelBadge {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-family: $font-body;
+}
+
+.badgePassed {
+    background: rgba($success, 0.15);
+    color: $success;
+    border: 1px solid rgba($success, 0.3);
+}
+
+.badgeAvail {
+    background: rgba($violet, 0.15);
+    color: $violet-light;
+    border: 1px solid rgba($violet, 0.3);
+}
+
+.badgeDragon {
+    background: rgba($acid, 0.15);
+    color: $acid;
+    border: 1px solid rgba($acid, 0.3);
+    animation: dragonPulse 3s ease-in-out infinite;
+}
+
+@keyframes dragonPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba($acid, 0.3); }
+    50%       { box-shadow: 0 0 12px 2px rgba($acid, 0.2); }
+}
+
+.panelScore {
+    font-size: 0.65rem;
+    color: $success;
+    letter-spacing: 0.08em;
+}
+
+.panelTitle {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: $ghost;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.bossTitle {
+    background: linear-gradient(90deg, $ghost, $acid);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.panelContent {
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: $mist;
+    margin-bottom: 24px;
+}
+
+// ── XP row ────────────────────────────────────────────────────────────────
+.xpRow {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+}
+
+.xpItem {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: $charcoal;
+    border: 1px solid $fog;
+    border-radius: 6px;
+    padding: 6px 14px;
+}
+
+.xpIcon { font-size: 14px; }
+
+.xpLabel {
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: $silver;
+}
+
+// ── Battle button ─────────────────────────────────────────────────────────
+.battleBtn {
+    font-family: $font-body;
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    background: $violet;
+    color: $ghost;
+    transition: all 0.2s;
+    width: 100%;
+
+    &:hover {
+        background: $violet-light;
+        box-shadow: 0 0 24px rgba($violet-glow, 0.4);
+        transform: translateY(-1px);
+    }
+}
+
+.battleBtnBoss {
+    background: linear-gradient(135deg, $acid-muted, $violet-deep);
+    font-size: 0.9rem;
+    padding: 16px 32px;
+    animation: bossGlow 3s ease-in-out infinite;
+
+    &:hover {
+        box-shadow: 0 0 32px rgba($acid, 0.5) !important;
+    }
+}
+
+@keyframes bossGlow {
+    0%, 100% { box-shadow: 0 0 12px rgba($acid, 0.2); }
+    50%       { box-shadow: 0 0 28px rgba($acid, 0.45); }
+}
+
+.battleBtnRetry {
+    background: transparent;
+    border: 1px solid $fog;
+    color: $mist;
+
+    &:hover {
+        border-color: $violet;
+        color: $ghost;
+        box-shadow: none;
+    }
+}
+
+.lockedMsg {
+    font-size: 0.75rem;
+    color: $fog;
+    letter-spacing: 0.06em;
+    padding: 14px;
+    border: 1px dashed $fog;
+    border-radius: 4px;
+    text-align: center;
+}
+
+// ── Enroll prompt (not enrolled state) ────────────────────────────────────
+.enrollPrompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 400px;
+    gap: 16px;
+    padding: 40px;
+
+    h2 {
+        font-family: $font-display;
+        font-weight: 800;
+        font-size: 1.6rem;
+        color: $ghost;
+        letter-spacing: -0.02em;
+    }
+
+    p {
+        font-size: 0.82rem;
+        color: $mist;
+        max-width: 360px;
+        line-height: 1.7;
+    }
+}
+
+.enrollPromptIcon {
+    font-size: 3rem;
+    filter: drop-shadow(0 0 16px rgba($violet, 0.5));
+}
