@@ -1,23 +1,26 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './jwt.strategy';
-import { LocalStrategy } from './local.strategy';
+import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from './local.strategy';
+import { JwtStrategy, RefreshTokenStrategy } from './jwt.strategy';
 
 @Module({
     imports: [
         forwardRef(() => UsersModule),
         PassportModule,
+        PassportModule,
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'DRAGON_SECRET',
-            signOptions: { expiresIn: '7d' },
+            secret: 'SECRET',
+            signOptions: { expiresIn: '15m' },
+        }),
+        JwtModule.register({
+            secret: 'REFRESH_TOKEN_SECRET',
+            signOptions: { expiresIn: '7d' }, // Long-lived refresh token
         }),
     ],
-    providers: [AuthService, JwtStrategy, LocalStrategy],
-    controllers: [AuthController],
-    exports: [AuthService, JwtModule],
+    providers: [AuthService, JwtStrategy, RefreshTokenStrategy, LocalStrategy],
+    exports: [AuthService],
 })
 export class AuthModule {}

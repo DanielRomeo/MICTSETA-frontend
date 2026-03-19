@@ -1,0 +1,39 @@
+@import '../main.module.scss';
+
+.container {
+	background-color: #f9f9f9;
+	padding: 2rem;
+	border-radius: 8px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.label {
+	font-weight: 600;
+	color: $dark-green;
+	margin-bottom: 0.5rem;
+}
+
+.controller {
+	border: 1px solid $blue;
+	transition: all 0.3s ease;
+
+	&:focus {
+		border-color: $primary-green;
+		box-shadow: 0 0 0 0.2rem rgba(0, 191, 99, 0.25);
+	}
+}
+
+.controllerCheck {
+	margin-right: 1rem;
+
+	input[type='checkbox'],
+	input[type='radio'] {
+		margin-right: 0.5rem;
+		accent-color: $primary-green;
+	}
+}
+
+.formFeedback {
+	color: $red;
+	font-size: 0.875rem;
+}

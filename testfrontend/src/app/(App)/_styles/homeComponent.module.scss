@@ -1,0 +1,1158 @@
+// homeComponent.module.scss
+
+// ===============================
+// GREEN /  THEME (INSTRUCTOR)
+// ===============================
+// Colors
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$black: #000000;
+$dark-green: #24570f;
+$light-green: #b9e185;
+
+// Custom brand colors
+$primary: $primary-green;
+$secondary: $blue;
+$accent: $yellow;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-light: #f5f7fa;
+$gray-medium: #e2e8f0;
+$gray-dark: #718096;
+$gradient-start: #00bf63;
+$gradient-end: #24570f;
+
+// ===============================
+// PINK / PURPLE THEME (Tutor)
+// ===============================
+
+// Core Colors
+$primary-purple: #7c3aed;     // Vibrant purple
+$soft-purple: #a78bfa;        // Lighter purple
+$pink: #ec4899;               // Strong pink
+$hot-pink: #db2777;           // Deeper pink
+$dark-purple: #3b0764;        // Deep background purple
+
+// Custom Brand Colors
+$primary: $primary-purple;
+$secondary: $pink;
+$accent: $hot-pink;
+
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+
+$gray-light: #f8f7ff;         // Slight purple tint
+$gray-medium: #e9e6ff;
+$gray-dark: #6b7280;
+
+// Gradient
+$gradient-start: #7c3aed;
+$gradient-end: #db2777;
+
+// ===============================
+
+.partnerLogo .partnersLogo {
+	background-color: #00bf63;
+	border: 1px solid red;
+}
+
+// Global styles
+.container {
+	// background-color: green;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	color: $text-dark;
+	overflow-x: hidden;
+}
+
+// Navbar styles
+.navbar {
+	background-color: rgba(0, 0, 0, 0.8);
+	backdrop-filter: blur(10px);
+	padding: 15px 0;
+	transition: all 0.3s ease;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+	.logoText {
+		font-size: 1.8rem;
+		font-weight: 700;
+		background: linear-gradient(to right, $primary-green, $light-green);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		margin-right: 1rem;
+	}
+
+	:global(.navbar-nav) {
+		.nav-link {
+			color: $text-light !important;
+			font-weight: 500;
+			padding: 0.5rem 1rem;
+			transition: all 0.2s ease;
+			position: relative;
+
+			&:hover {
+				color: $primary-green !important;
+
+				&::after {
+					width: 50%;
+				}
+			}
+
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: 0;
+				left: 50%;
+				transform: translateX(-50%);
+				width: 0;
+				height: 2px;
+				background-color: $primary-green;
+				transition: width 0.3s ease;
+			}
+		}
+	}
+
+	.navButtons {
+		display: flex;
+		gap: 10px;
+		margin-left: 20px;
+
+		.loginBtn {
+			border: 1px solid rgba(255, 255, 255, 0.5);
+			color: white;
+
+			&:hover {
+				background-color: rgba(255, 255, 255, 0.1);
+				border-color: white;
+			}
+		}
+
+		.signupBtn {
+			background-color: $primary-green;
+			border: none;
+			padding: 8px 20px;
+
+			&:hover {
+				background-color: darken($primary-green, 10%);
+				transform: translateY(-2px);
+				box-shadow: 0 4px 8px rgba(0, 191, 99, 0.3);
+			}
+		}
+	}
+}
+
+// Hero Section
+.heroSection {
+	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+	color: $text-light;
+	padding: 180px 0 100px;
+	position: relative;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: url('/images/grid-pattern.svg');
+		opacity: 0.05;
+	}
+
+	.heroContent {
+		position: relative;
+		h1 {
+			font-size: 3.5rem;
+			font-weight: 800;
+			line-height: 1.2;
+			margin-bottom: 1.5rem;
+
+			.highlight {
+				color: $primary-green;
+				position: relative;
+
+				&::after {
+					content: '';
+					position: absolute;
+					bottom: 5px;
+					left: 0;
+					width: 100%;
+					height: 8px;
+					background-color: rgba($primary-green, 0.2);
+					z-index: -1;
+				}
+			}
+		}
+
+		p {
+			font-size: 1.2rem;
+			line-height: 1.6;
+			color: rgba(255, 255, 255, 0.8);
+			margin-bottom: 2rem;
+			max-width: 540px;
+		}
+
+		.heroCta {
+			display: flex;
+			gap: 15px;
+			margin-bottom: 2.5rem;
+
+			.primaryBtn {
+				background-color: $primary-green;
+				border: none;
+				font-weight: 600;
+				padding: 12px 28px;
+				border-radius: 8px;
+				transition: all 0.3s ease;
+
+				&:hover {
+					background-color: darken($primary-green, 8%);
+					transform: translateY(-2px);
+					box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
+				}
+			}
+
+			.secondaryBtn {
+				border: 1.5px solid rgba(255, 255, 255, 0.6);
+				font-weight: 600;
+				padding: 12px 28px;
+				border-radius: 8px;
+				transition: all 0.3s ease;
+
+				&:hover {
+					background: linear-gradient(
+						135deg,
+						$gradient-start,
+						$gradient-end
+					);
+					transform: translateY(-2px);
+					// border: none;
+					// padding: 12px 30px;
+					// font-weight: 600;
+					// border-radius: 8px;
+					color: $text-light;
+					// transition: all 0.3s ease;
+					border-color: white;
+				}
+			}
+		}
+
+		.statBadges {
+			display: flex;
+			gap: 30px;
+
+			.statItem {
+				display: flex;
+				flex-direction: column;
+
+				.statNumber {
+					font-size: 1.8rem;
+					font-weight: 700;
+					color: $primary-green;
+				}
+
+				.statLabel {
+					font-size: 0.9rem;
+					color: rgba(255, 255, 255, 0.7);
+				}
+			}
+		}
+	}
+
+	.heroImageContainer {
+		position: relative;
+
+		.heroImage {
+			position: relative;
+			z-index: 1;
+			border-radius: 20px;
+			overflow: hidden;
+			box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+		}
+
+		.floatingCard {
+			position: absolute;
+			bottom: 20px;
+			right: -30px;
+			background: rgba(255, 255, 255, 0.9);
+			backdrop-filter: blur(20px);
+			padding: 20px;
+			border-radius: 12px;
+			width: 280px;
+			box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+			z-index: 2;
+
+			.progressIndicator {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				margin-bottom: 10px;
+
+				.progressBar {
+					width: 70%;
+					height: 8px;
+					background-color: rgba($gray-dark, 0.2);
+					border-radius: 4px;
+					overflow: hidden;
+
+					.progressFill {
+						width: 75%;
+						height: 100%;
+						background-color: $primary-green;
+						border-radius: 4px;
+					}
+				}
+
+				span {
+					font-size: 0.75rem;
+					font-weight: 600;
+					color: $primary-green;
+				}
+			}
+
+			h4 {
+				color: $text-dark;
+				font-size: 1rem;
+				font-weight: 600;
+				margin-bottom: 5px;
+			}
+
+			p {
+				color: $gray-dark;
+				font-size: 0.85rem;
+				margin: 0;
+			}
+		}
+	}
+}
+
+// Section Common Styles
+.sectionHeader {
+	text-align: center;
+	margin-bottom: 3rem;
+
+	h2 {
+		font-size: 2.5rem;
+		font-weight: 700;
+		color: $text-dark;
+		margin-bottom: 1rem;
+		position: relative;
+		display: inline-block;
+
+		&::after {
+			content: '';
+			position: absolute;
+			width: 80px;
+			height: 4px;
+			background-color: $primary-green;
+			bottom: -10px;
+			left: 50%;
+			transform: translateX(-50%);
+			border-radius: 2px;
+		}
+	}
+
+	p {
+		font-size: 1.1rem;
+		color: $gray-dark;
+		max-width: 600px;
+		margin: 0 auto;
+	}
+}
+
+// Featured Courses Section
+.featuredSection {
+	padding: 100px 0;
+	background-color: $gray-light;
+
+	.courseCard {
+		border: 1px solid rgba(0, 0, 0, 0.05);
+		border-radius: 12px;
+		overflow: hidden;
+		transition: all 0.3s ease;
+		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+		height: 100%;
+
+		&:hover {
+			transform: translateY(-8px);
+			box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+
+			.courseImageContainer {
+				.courseOverlay {
+					opacity: 1;
+				}
+			}
+		}
+
+		.courseImageContainer {
+			position: relative;
+			height: 200px;
+			overflow: hidden;
+
+			.courseImage {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				transition: transform 0.5s ease;
+			}
+
+			.courseOverlay {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.5);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				opacity: 0;
+				transition: all 0.3s ease;
+
+				.previewBtn {
+					font-weight: 600;
+					padding: 8px 20px;
+					border-radius: 6px;
+				}
+			}
+		}
+
+		.courseRating {
+			display: flex;
+			align-items: center;
+			margin-bottom: 10px;
+
+			.ratingStars {
+				color: $yellow;
+				margin-right: 8px;
+				font-size: 0.9rem;
+			}
+
+			.ratingNumber {
+				font-weight: 700;
+				margin-right: 5px;
+			}
+
+			.studentCount {
+				font-size: 0.8rem;
+				color: $gray-dark;
+			}
+		}
+
+		.cardFooter {
+			margin-top: 15px;
+
+			.courseBtn {
+				border-color: $primary-green;
+				color: $primary-green;
+				font-weight: 500;
+				width: 100%;
+
+				&:hover {
+					background-color: $primary-green;
+					color: white;
+				}
+			}
+		}
+	}
+
+	.viewAllContainer {
+		text-align: center;
+		margin-top: 3rem;
+
+		.viewAllBtn {
+			color: $primary-green;
+			font-weight: 600;
+			font-size: 1.1rem;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: none;
+
+				.arrowIcon {
+					transform: translateX(5px);
+				}
+			}
+
+			.arrowIcon {
+				transition: transform 0.3s ease;
+				display: inline-block;
+				margin-left: 5px;
+			}
+		}
+	}
+}
+
+// How It Works Section
+.howItWorksSection {
+	padding: 100px 0;
+	background-color: white;
+
+	.stepsContainer {
+		margin-top: 50px;
+	}
+
+	.stepCard {
+		padding: 30px 20px;
+		text-align: center;
+		position: relative;
+
+		.stepNumber {
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: rgba($primary-green, 0.1);
+			position: absolute;
+			top: 0;
+			left: 50%;
+			transform: translateX(-50%);
+			z-index: 0;
+		}
+
+		h3 {
+			font-size: 1.4rem;
+			font-weight: 700;
+			margin: 1.5rem 0 1rem;
+			position: relative;
+			z-index: 1;
+		}
+
+		p {
+			color: $gray-dark;
+			font-size: 1rem;
+			line-height: 1.6;
+			margin-bottom: 0;
+			position: relative;
+			z-index: 1;
+		}
+	}
+}
+
+// Become an Instructor Section
+.becomeInstructorSection {
+	padding: 100px 0;
+	background-color: $gray-light;
+
+	.instructorImageContainer {
+		position: relative;
+		border-radius: 20px;
+		overflow: hidden;
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+		img {
+			width: 100%;
+			height: auto;
+			display: block;
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 30px;
+			left: 30px;
+			width: 100%;
+			height: 100%;
+			border: 4px solid $primary-green;
+			border-radius: 20px;
+			z-index: -1;
+		}
+	}
+
+	.instructorContent {
+		padding: 20px 0 20px 30px;
+
+		h2 {
+			font-size: 1.8rem;
+			color: $primary-green;
+			margin-bottom: 0.5rem;
+			font-weight: 700;
+		}
+
+		h3 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			margin-bottom: 1.5rem;
+			color: $text-dark;
+		}
+
+		p {
+			font-size: 1.1rem;
+			line-height: 1.7;
+			color: $gray-dark;
+			margin-bottom: 2rem;
+		}
+
+		.instructorBenefits {
+			margin-bottom: 2.5rem;
+
+			.benefitItem {
+				display: flex;
+				align-items: center;
+				margin-bottom: 1rem;
+				font-size: 1.05rem;
+
+				.checkIcon {
+					color: $primary-green;
+					font-weight: bold;
+					margin-right: 10px;
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		.instructorCta {
+			background-color: $primary-green;
+			border: none;
+			padding: 12px 30px;
+			font-weight: 600;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+
+			&:hover {
+				background-color: darken($primary-green, 8%);
+				transform: translateY(-3px);
+				box-shadow: 0 10px 25px rgba(0, 191, 99, 0.3);
+			}
+		}
+	}
+}
+
+// Become a TUTOR Section ( PURPLE / PINK THEME )
+.becomeTutorSection {
+	padding: 100px 0;
+	background-color: $gray-light;
+
+	.tutorImageContainer {
+		position: relative;
+		border-radius: 20px;
+		overflow: hidden;
+		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+		img {
+			width: 100%;
+			height: auto;
+			display: block;
+		}
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 30px;
+			left: 30px;
+			width: 100%;
+			height: 100%;
+			border: 4px solid $primary-purple;
+			border-radius: 20px;
+			z-index: -1;
+		}
+	}
+
+	.tutorContent {
+		padding: 20px 0 20px 30px;
+
+		h2 {
+			font-size: 1.8rem;
+			color: $primary-purple;
+			margin-bottom: 0.5rem;
+			font-weight: 700;
+		}
+
+		h3 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			margin-bottom: 1.5rem;
+			color: $text-dark;
+		}
+
+		p {
+			font-size: 1.1rem;
+			line-height: 1.7;
+			color: $gray-dark;
+			margin-bottom: 2rem;
+		}
+
+		.tutorBenefits {
+			margin-bottom: 2.5rem;
+
+			.benefitItem {
+				display: flex;
+				align-items: center;
+				margin-bottom: 1rem;
+				font-size: 1.05rem;
+
+				.checkIcon {
+					color: $pink;
+					font-weight: bold;
+					margin-right: 10px;
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		.tutorCta {
+			background: linear-gradient(
+				135deg,
+				$gradient-start,
+				$gradient-end
+			);
+			border: none;
+			padding: 12px 30px;
+			font-weight: 600;
+			border-radius: 8px;
+			color: $text-light;
+			transition: all 0.3s ease;
+
+			&:hover {
+				background: linear-gradient(
+					135deg,
+					darken($gradient-start, 8%),
+					darken($gradient-end, 8%)
+				);
+				transform: translateY(-3px);
+				box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+			}
+		}
+	}
+}
+
+// Testimonials Section
+.testimonialsSection {
+	padding: 100px 0;
+	background-color: white;
+
+	.testimonialCard {
+		background-color: white;
+		border-radius: 16px;
+		padding: 30px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+		height: 100%;
+		position: relative;
+		transition: all 0.3s ease;
+
+		&:hover {
+			transform: translateY(-10px);
+			box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+		}
+
+		.quoteIcon {
+			font-size: 5rem;
+			position: absolute;
+			top: 10px;
+			left: 20px;
+			color: rgba($primary-green, 0.1);
+			font-family: 'Georgia', serif;
+			line-height: 1;
+		}
+
+		.quote {
+			font-size: 1.05rem;
+			line-height: 1.7;
+			color: $gray-dark;
+			margin-bottom: 20px;
+			position: relative;
+			z-index: 1;
+		}
+
+		.testimonialProfile {
+			display: flex;
+			align-items: center;
+
+			.avatarContainer {
+				margin-right: 15px;
+
+				.avatar {
+					width: 50px;
+					height: 50px;
+					border-radius: 50%;
+					object-fit: cover;
+				}
+			}
+
+			.profileInfo {
+				h4 {
+					font-size: 1.1rem;
+					font-weight: 700;
+					margin-bottom: 3px;
+					color: $text-dark;
+				}
+
+				p {
+					font-size: 0.9rem;
+					color: $gray-dark;
+					margin: 0;
+				}
+			}
+		}
+	}
+}
+
+// Partners Section
+.partnersSection {
+	// padding: 80px 0;
+	background-color: $gray-light;
+
+	.partnersLogo {
+		margin-top: 2rem;
+		// border: 1px solid black;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		.partnerLogo {
+			// border: 1px solid red;
+			opacity: 0.7;
+			filter: grayscale(100%);
+			transition: all 0.3s ease;
+			max-width: 100%;
+			height: auto;
+
+			&:hover {
+				opacity: 1;
+				filter: grayscale(0%);
+			}
+			.image {
+				// border: 1px solid blue;
+			}
+
+			// .partnersLogoRow{
+			// 	border: 3px solid blue;
+			// }
+		}
+	}
+}
+
+// CTA Section
+.ctaSection {
+	padding: 100px 0;
+	background: linear-gradient(135deg, #f5f7fa 0%, #e2e8f0 100%);
+
+	.ctaCard {
+		background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+		border-radius: 20px;
+		padding: 60px 40px;
+		text-align: center;
+		color: white;
+		box-shadow: 0 20px 50px rgba(0, 191, 99, 0.2);
+
+		h2 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			margin-bottom: 1rem;
+		}
+
+		p {
+			font-size: 1.2rem;
+			margin-bottom: 2rem;
+			opacity: 0.9;
+		}
+
+		.ctaButtons {
+			display: flex;
+			gap: 20px;
+			justify-content: center;
+			flex-wrap: wrap;
+
+			.ctaBtn {
+				padding: 12px 30px;
+				font-weight: 600;
+				border-radius: 8px;
+				transition: all 0.3s ease;
+
+				&:hover {
+					transform: translateY(-3px);
+					box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+				}
+			}
+
+			.ctaBtnPrimary {
+				background-color: white;
+				color: $primary-green;
+				border: none;
+
+				&:hover {
+					background-color: white;
+					color: darken($primary-green, 10%);
+				}
+			}
+		}
+	}
+}
+
+// Footer
+.footer {
+	background-color: #111827;
+	color: $text-light;
+	padding: 80px 0 30px;
+
+	.footerBrand {
+		.footerLogo {
+			font-size: 2rem;
+			font-weight: 800;
+			background: linear-gradient(to right, $primary-green, $light-green);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			margin-bottom: 1rem;
+			display: inline-block;
+		}
+
+		p {
+			color: rgba(255, 255, 255, 0.7);
+			font-size: 1rem;
+			line-height: 1.6;
+			margin-bottom: 1.5rem;
+		}
+
+		.socialIcons {
+			display: flex;
+			gap: 15px;
+
+			a {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 40px;
+				height: 40px;
+				background-color: rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				color: white;
+				transition: all 0.3s ease;
+
+				&:hover {
+					background-color: $primary-green;
+					transform: translateY(-3px);
+				}
+			}
+		}
+	}
+
+	.footerLinks {
+		h4 {
+			font-size: 1.2rem;
+			font-weight: 600;
+			margin-bottom: 1.5rem;
+			color: white;
+			position: relative;
+			display: inline-block;
+
+			&::after {
+				content: '';
+				position: absolute;
+				width: 30px;
+				height: 2px;
+				background-color: $primary-green;
+				bottom: -8px;
+				left: 0;
+			}
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+
+			li {
+				margin-bottom: 12px;
+
+				a {
+					color: rgba(255, 255, 255, 0.7);
+					text-decoration: none;
+					transition: all 0.2s ease;
+					font-size: 0.95rem;
+
+					&:hover {
+						color: $primary-green;
+						padding-left: 5px;
+					}
+				}
+			}
+		}
+	}
+
+	.footerBottom {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-top: 40px;
+		margin-top: 60px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		flex-wrap: wrap;
+		gap: 20px;
+
+		p {
+			color: rgba(255, 255, 255, 0.5);
+			font-size: 0.9rem;
+			margin: 0;
+		}
+
+		.footerBottomLinks {
+			display: flex;
+			gap: 20px;
+
+			a {
+				color: rgba(255, 255, 255, 0.5);
+				text-decoration: none;
+				font-size: 0.9rem;
+				transition: all 0.2s ease;
+
+				&:hover {
+					color: $primary-green;
+				}
+			}
+		}
+	}
+}
+
+// Media Queries for Responsiveness
+@media (max-width: 991px) {
+	.navbar {
+		padding: 10px 0;
+
+		.navButtons {
+			margin-top: 15px;
+			margin-left: 0;
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.heroSection {
+		padding: 150px 0 80px;
+
+		.heroContent {
+			text-align: center;
+			margin-bottom: 50px;
+
+			h1 {
+				font-size: 2.8rem;
+			}
+
+			p {
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.heroCta {
+				justify-content: center;
+			}
+
+			.statBadges {
+				justify-content: center;
+			}
+		}
+	}
+
+	.heroImageContainer {
+		.floatingCard {
+			right: 50%;
+			transform: translateX(50%);
+		}
+	}
+
+	.becomeInstructorSection {
+		.instructorImageContainer {
+			margin-bottom: 50px;
+		}
+
+		.instructorContent {
+			padding-left: 0;
+			text-align: center;
+
+			.instructorBenefits {
+				.benefitItem {
+					justify-content: center;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 767px) {
+	.heroSection {
+		.heroContent {
+			h1 {
+				font-size: 2.3rem;
+			}
+		}
+	}
+
+	.sectionHeader {
+		h2 {
+			font-size: 2rem;
+		}
+	}
+
+	.testimonialCard {
+		margin-bottom: 30px;
+	}
+
+	.ctaSection {
+		.ctaCard {
+			padding: 40px 20px;
+
+			h2 {
+				font-size: 2rem;
+			}
+		}
+	}
+
+	.footer {
+		.footerBrand,
+		.footerLinks {
+			margin-bottom: 40px;
+		}
+
+		.footerBottom {
+			flex-direction: column;
+			text-align: center;
+
+			.footerBottomLinks {
+				justify-content: center;
+			}
+		}
+	}
+}
+
+@media (max-width: 575px) {
+	.heroSection {
+		.heroContent {
+			h1 {
+				font-size: 2rem;
+			}
+
+			.heroCta {
+				flex-direction: column;
+				width: 100%;
+
+				.primaryBtn,
+				.secondaryBtn {
+					width: 100%;
+				}
+			}
+
+			.statBadges {
+				flex-direction: column;
+				align-items: center;
+				gap: 15px;
+			}
+		}
+	}
+
+	.stepCard {
+		margin-bottom: 30px;
+	}
+
+	.partnersLogo {
+		.partnerLogo {
+			margin-bottom: 20px;
+		}
+	}
+}

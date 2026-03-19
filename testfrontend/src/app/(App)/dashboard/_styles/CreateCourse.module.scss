@@ -1,0 +1,126 @@
+// app/_styles/CreateCourse.module.scss
+// Similar to CreateOrganisation and Profile
+
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-light: #f5f7fa;
+$gray-medium: #e2e8f0;
+$gray-dark: #718096;
+
+.createPage {
+	max-width: 1400px;
+	margin: 0 auto;
+	transition: all 0.3s ease;
+
+	&.sidebarOpen {
+		padding: 0 2rem;
+	}
+
+	&.sidebarClosed {
+		padding: 0 3rem;
+	}
+
+	.header {
+		margin-bottom: 3rem;
+
+		h1 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: $text-dark;
+			margin-bottom: 0.5rem;
+			position: relative;
+
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: -8px;
+				left: 0;
+				width: 80px;
+				height: 4px;
+				background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+				border-radius: 2px;
+			}
+		}
+
+		p {
+			font-size: 1.1rem;
+			color: $gray-dark;
+		}
+	}
+
+	.formCard {
+		border: none;
+		border-radius: 16px;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+		:global(.card-body) {
+			padding: 2.5rem;
+		}
+
+		.label {
+			font-weight: 600;
+			color: $text-dark;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+		}
+
+		.input {
+			border-radius: 8px;
+			border: 1px solid $gray-medium;
+			padding: 0.75rem 1rem;
+			transition: all 0.3s ease;
+
+			&:focus {
+				border-color: $primary-green;
+				box-shadow: 0 0 0 0.2rem rgba($primary-green, 0.25);
+			}
+		}
+
+		.submitBtn {
+			background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+			border: none;
+			padding: 0.75rem 1.75rem;
+			border-radius: 8px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba($primary-green, 0.3);
+			}
+
+			&:disabled {
+				opacity: 0.7;
+				cursor: not-allowed;
+			}
+		}
+	}
+
+	// Responsive
+	@media (max-width: 992px) {
+		.header {
+			h1 {
+				font-size: 2rem;
+			}
+		}
+	}
+
+	@media (max-width: 768px) {
+		&.sidebarOpen,
+		&.sidebarClosed {
+			padding: 0 1rem;
+		}
+
+		.formCard {
+			:global(.card-body) {
+				padding: 1.5rem;
+			}
+		}
+	}
+}

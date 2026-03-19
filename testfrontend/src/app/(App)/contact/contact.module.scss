@@ -1,0 +1,262 @@
+// contact.module.scss
+$primary-green: #00bf63;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-muted: #718096;
+$gray-light: #f5f7fa;
+$border: #e2e8f0;
+
+.wrapper {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.hero {
+	background: linear-gradient(135deg, #0a0a0a 0%, #1a2332 60%, #24570f 100%);
+	color: #fff;
+	padding: 90px 0 70px;
+	position: relative;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0, 191, 99, 0.12) 0%, transparent 70%);
+		pointer-events: none;
+	}
+
+	h1 {
+		font-size: clamp(2.2rem, 5vw, 3.6rem);
+		font-weight: 800;
+		line-height: 1.1;
+		margin-bottom: 16px;
+
+		span { color: $primary-green; }
+	}
+
+	p {
+		color: rgba(255, 255, 255, 0.65);
+		font-size: 1.05rem;
+		max-width: 540px;
+	}
+}
+
+.badge {
+	display: inline-block;
+	background: rgba(0, 191, 99, 0.15);
+	border: 1px solid rgba(0, 191, 99, 0.3);
+	color: $primary-green;
+	border-radius: 40px;
+	padding: 6px 18px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+}
+
+.section {
+	padding: 80px 0;
+}
+
+.sectionLabel {
+	color: $primary-green;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.divider {
+	width: 48px;
+	height: 4px;
+	background: linear-gradient(90deg, $primary-green, $light-green);
+	border-radius: 4px;
+	margin-bottom: 28px;
+}
+
+.sectionTitle {
+	font-size: clamp(1.6rem, 3vw, 2rem);
+	font-weight: 800;
+	color: $text-dark;
+	margin-bottom: 12px;
+}
+
+.subDesc {
+	color: $text-muted;
+	font-size: 0.95rem;
+	margin-bottom: 28px;
+}
+
+// ── Contact Methods ──────────────────────────────────
+.contactMethod {
+	display: flex;
+	gap: 18px;
+	align-items: center;
+	padding: 20px 22px;
+	background: #fff;
+	border-radius: 14px;
+	border: 1px solid $border;
+	margin-bottom: 14px;
+	text-decoration: none;
+	color: $text-dark;
+	transition: all 0.25s ease;
+
+	&:hover {
+		border-color: $primary-green;
+		transform: translateX(6px);
+		box-shadow: 0 8px 24px rgba(0, 191, 99, 0.1);
+		color: $text-dark;
+	}
+
+	h5 {
+		font-size: 0.95rem;
+		font-weight: 700;
+		margin-bottom: 3px;
+	}
+
+	p {
+		font-size: 0.85rem;
+		color: $text-muted;
+		margin: 0;
+	}
+}
+
+.methodIcon {
+	width: 48px;
+	height: 48px;
+	background: linear-gradient(135deg, $primary-green, $dark-green);
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.2rem;
+	flex-shrink: 0;
+}
+
+.socialRow {
+	margin-top: 28px;
+}
+
+.socialLabel {
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: $text-muted;
+	margin-bottom: 12px;
+}
+
+.socials {
+	display: flex;
+	gap: 10px;
+}
+
+.socialIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	background: $gray-light;
+	border-radius: 50%;
+	font-size: 1rem;
+	text-decoration: none;
+	transition: all 0.25s ease;
+
+	&:hover {
+		background: $primary-green;
+		transform: translateY(-3px);
+	}
+}
+
+// ── Form ─────────────────────────────────────────────
+.formCard {
+	background: #fff;
+	border: 1px solid $border;
+	border-radius: 20px;
+	padding: 40px;
+
+	h3 {
+		font-size: 1.4rem;
+		font-weight: 700;
+		margin-bottom: 8px;
+	}
+}
+
+.formDesc {
+	font-size: 0.88rem;
+	color: $text-muted;
+	margin-bottom: 28px;
+}
+
+.label {
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: $text-dark;
+	margin-bottom: 6px;
+}
+
+.input {
+	border: 1.5px solid $border !important;
+	border-radius: 10px !important;
+	padding: 12px 16px !important;
+	font-size: 0.92rem !important;
+	font-family: inherit;
+	transition: all 0.2s ease;
+
+	&:focus {
+		border-color: $primary-green !important;
+		box-shadow: 0 0 0 3px rgba(0, 191, 99, 0.12) !important;
+	}
+}
+
+.textarea {
+	min-height: 130px;
+	resize: vertical;
+}
+
+.submitBtn {
+	background: linear-gradient(135deg, $primary-green, $dark-green);
+	color: #fff;
+	border: none;
+	border-radius: 10px;
+	padding: 14px 32px;
+	font-weight: 700;
+	font-size: 1rem;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	font-family: inherit;
+
+	&:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 10px 28px rgba(0, 191, 99, 0.35);
+	}
+}
+
+// ── Success ───────────────────────────────────────────
+.successState {
+	text-align: center;
+	padding: 60px 20px;
+
+	h3 {
+		font-size: 1.4rem;
+		font-weight: 700;
+		margin-bottom: 12px;
+	}
+
+	p { color: $text-muted; }
+}
+
+.successIcon {
+	font-size: 3.5rem;
+	margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+	.hero { padding: 60px 0 50px; }
+	.formCard { padding: 28px 22px; }
+}

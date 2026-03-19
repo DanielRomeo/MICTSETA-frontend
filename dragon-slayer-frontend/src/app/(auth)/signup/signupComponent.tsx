@@ -47,6 +47,8 @@ const SignupComponent = () => {
 		formState: { errors },
 	} = useForm<SignupFormData>({ resolver: yupResolver(schema) });
 
+
+	// Form submission handler......
 	const onSubmit = async (data: SignupFormData) => {
 		try {
 			setIsLoading(true);

@@ -1,0 +1,636 @@
+// InstructorProfile.module.scss - Using your home page colors
+
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-light: #f5f7fa;
+$gray-medium: #e2e8f0;
+$gray-dark: #718096;
+
+.profilePage {
+	max-width: 1400px;
+	margin: 0 auto;
+	transition: all 0.3s ease;
+
+	// Default state (sidebar open on desktop)
+	&.sidebarOpen {
+		padding: 0 2rem;
+	}
+
+	// Sidebar collapsed on desktop
+	&.sidebarClosed {
+		padding: 0 3rem;
+	}
+
+	.header {
+		margin-bottom: 3rem;
+
+		h1 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: $text-dark;
+			margin-bottom: 0.5rem;
+			position: relative;
+
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: -8px;
+				left: 0;
+				width: 80px;
+				height: 4px;
+				background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+				border-radius: 2px;
+			}
+		}
+
+		p {
+			font-size: 1.1rem;
+			color: $gray-dark;
+		}
+	}
+}
+
+.avatarCard {
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+	margin-bottom: 1.5rem;
+
+	:global(.card-body) {
+		padding: 2.5rem 2rem;
+	}
+
+	.avatarContainer {
+		position: relative;
+		display: inline-block;
+		margin-bottom: 1.5rem;
+
+		.avatar {
+			width: 160px;
+			height: 160px;
+			border-radius: 50%;
+			background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			position: relative;
+			overflow: hidden;
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background: radial-gradient(
+					circle at 30% 30%,
+					rgba(255, 255, 255, 0.2),
+					transparent
+				);
+			}
+		}
+
+		.uploadBtn {
+			position: absolute;
+			bottom: 5px;
+			right: 5px;
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+			background: white;
+			border: 3px solid $gray-light;
+			color: $primary-green;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.2rem;
+			transition: all 0.3s ease;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+			&:hover {
+				background: $primary-green;
+				color: white;
+				transform: scale(1.1);
+			}
+		}
+	}
+
+	.userName {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: $text-dark;
+		margin-bottom: 0.25rem;
+	}
+
+	.userRole {
+		color: $gray-dark;
+		font-size: 1rem;
+		margin-bottom: 2rem;
+	}
+
+	.stats {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 1rem;
+		padding-top: 2rem;
+		border-top: 1px solid $gray-medium;
+
+		.statItem {
+			text-align: center;
+
+			h4 {
+				font-size: 1.75rem;
+				font-weight: 700;
+				color: $primary-green;
+				margin-bottom: 0.25rem;
+			}
+
+			p {
+				font-size: 0.875rem;
+				color: $gray-dark;
+				margin: 0;
+			}
+		}
+	}
+}
+
+.infoCard {
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+	:global(.card-body) {
+		padding: 2rem;
+
+		h5 {
+			font-size: 1.125rem;
+			font-weight: 700;
+			color: $text-dark;
+			margin-bottom: 1.5rem;
+		}
+	}
+
+	.statusItem {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1rem 0;
+		border-bottom: 1px solid $gray-medium;
+
+		&:last-child {
+			border-bottom: none;
+		}
+
+		.statusLabel {
+			color: $gray-dark;
+			font-size: 0.95rem;
+		}
+
+		.statusValue {
+			font-weight: 600;
+			color: $text-dark;
+
+			&.premium {
+				color: $yellow;
+				background: rgba($yellow, 0.1);
+				padding: 0.25rem 0.75rem;
+				border-radius: 6px;
+			}
+
+			&.active {
+				color: $primary-green;
+				background: rgba($primary-green, 0.1);
+				padding: 0.25rem 0.75rem;
+				border-radius: 6px;
+			}
+		}
+	}
+}
+
+.formCard {
+	border: none;
+	border-radius: 16px;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+	margin-bottom: 1.5rem;
+
+	:global(.card-body) {
+		padding: 2.5rem;
+	}
+
+	.cardHeader {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 2.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 2px solid $gray-medium;
+
+		h4 {
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: $text-dark;
+			margin: 0;
+		}
+
+		.editBtn {
+			background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+			border: none;
+			padding: 0.75rem 1.75rem;
+			border-radius: 8px;
+			font-weight: 600;
+			transition: all 0.3s ease;
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
+			}
+		}
+
+		.actionBtns {
+			display: flex;
+			gap: 0.75rem;
+
+			button {
+				padding: 0.75rem 1.5rem;
+				border-radius: 8px;
+				font-weight: 600;
+			}
+
+			.saveBtn {
+				background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+				border: none;
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+
+				&:hover {
+					transform: translateY(-2px);
+					box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
+				}
+			}
+		}
+	}
+
+	.label {
+		font-weight: 600;
+		color: $text-dark;
+		margin-bottom: 0.5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.95rem;
+
+		svg {
+			color: $primary-green;
+		}
+	}
+
+	.input {
+		border: 2px solid $gray-medium;
+		border-radius: 8px;
+		padding: 0.875rem 1rem;
+		font-size: 1rem;
+		transition: all 0.3s ease;
+
+		&:focus {
+			border-color: $primary-green;
+			box-shadow: 0 0 0 3px rgba($primary-green, 0.1);
+		}
+
+		&:disabled {
+			background: $gray-light;
+			border-color: $gray-medium;
+			cursor: not-allowed;
+		}
+	}
+}
+
+// Expertise Section
+.expertiseList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-bottom: 1.5rem;
+}
+
+.expertiseBadge {
+	background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+	color: white;
+	padding: 0.5rem 1rem;
+	border-radius: 20px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+
+	.removeBadge {
+		background: rgba(255, 255, 255, 0.3);
+		border: none;
+		color: white;
+		width: 20px;
+		height: 20px;
+		border-radius: 50%;
+		cursor: pointer;
+		font-size: 1.2rem;
+		line-height: 1;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: rgba(255, 255, 255, 0.5);
+		}
+	}
+}
+
+.addExpertise {
+	display: flex;
+	gap: 0.75rem;
+
+	.input {
+		flex: 1;
+	}
+
+	.addBtn {
+		background: linear-gradient(135deg, $blue 0%, lighten($blue, 10%) 100%);
+		border: none;
+		padding: 0.875rem 1.5rem;
+		border-radius: 8px;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		white-space: nowrap;
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 20px rgba($blue, 0.3);
+		}
+	}
+}
+
+// Certifications Section
+.certificationsList {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.certificationItem {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	padding: 1.5rem;
+	background: $gray-light;
+	border-radius: 12px;
+	border: 2px solid $gray-medium;
+	transition: all 0.3s ease;
+
+	&:hover {
+		border-color: $primary-green;
+		box-shadow: 0 4px 12px rgba(0, 191, 99, 0.1);
+	}
+
+	.certIcon {
+		width: 50px;
+		height: 50px;
+		border-radius: 50%;
+		background: linear-gradient(135deg, $yellow 0%, darken($yellow, 10%) 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		font-size: 1.5rem;
+		flex-shrink: 0;
+	}
+
+	.certDetails {
+		flex: 1;
+
+		h5 {
+			font-size: 1.1rem;
+			font-weight: 700;
+			color: $text-dark;
+			margin-bottom: 0.25rem;
+		}
+
+		p {
+			color: $gray-dark;
+			font-size: 0.9rem;
+			margin: 0;
+		}
+	}
+}
+
+.addCertification {
+	.addBtn {
+		background: linear-gradient(135deg, $blue 0%, lighten($blue, 10%) 100%);
+		border: none;
+		width: 100%;
+		height: 100%;
+		min-height: 46px;
+		border-radius: 8px;
+		font-weight: 600;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 20px rgba($blue, 0.3);
+		}
+	}
+}
+
+// Mobile responsive
+@media (max-width: 1024px) {
+	.profilePage {
+		padding: 0 1rem !important;
+	}
+
+	.formCard {
+		.cardHeader {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+
+			.actionBtns {
+				width: 100%;
+
+				button {
+					flex: 1;
+				}
+			}
+		}
+	}
+
+	.addCertification {
+		.addBtn {
+			width: auto;
+			padding: 0.875rem 1.5rem;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.profilePage {
+		.header {
+			h1 {
+				font-size: 2rem;
+			}
+		}
+	}
+
+	.formCard,
+	.securityCard {
+		:global(.card-body) {
+			padding: 1.5rem;
+		}
+	}
+
+	.avatarCard {
+		.avatarContainer {
+			.avatar {
+				width: 120px;
+				height: 120px;
+			}
+		}
+
+		.stats {
+			gap: 0.5rem;
+
+			.statItem {
+				h4 {
+					font-size: 1.5rem;
+				}
+
+				p {
+					font-size: 0.75rem;
+				}
+			}
+		}
+	}
+
+	.addExpertise {
+		flex-direction: column;
+
+		.addBtn {
+			width: 100%;
+		}
+	}
+}
+// At the bottom, change your responsive breakpoints to match the new 1024px breakpoint
+// Responsive breakpoints
+@media (max-width: 1900px) {
+	.profilePage {
+		// border: 1px solid blue;
+		padding: 0 1.5rem;
+		margin-left: 80px;
+	}
+}
+@media (max-width: 1400px) {
+	.profilePage {
+		// border: 1px solid red;
+		padding: 0 1.5rem;
+		margin-left: 80px;
+	}
+}
+
+@media (max-width: 1290px) {
+	// Switch to stacked tablet layout
+	.profilePage {
+		padding: 0 1rem;
+
+		.header {
+			h1 {
+				font-size: 2rem;
+			}
+
+			p {
+				font-size: 1rem;
+			}
+		}
+	}
+
+	// Stack the columns on tablet
+	.avatarCard {
+		margin-bottom: 2rem;
+	}
+
+	.formCard {
+		.cardHeader {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 1rem;
+
+			.actionBtns {
+				width: 100%;
+
+				button {
+					flex: 1;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 992px) {
+	.profilePage {
+		.header {
+			h1 {
+				font-size: 1.75rem;
+			}
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.profilePage {
+		padding: 0 0.75rem;
+	}
+
+	.formCard,
+	.securityCard {
+		:global(.card-body) {
+			padding: 1.5rem;
+		}
+	}
+
+	.avatarCard {
+		.avatarContainer {
+			.avatar {
+				width: 120px;
+				height: 120px;
+			}
+		}
+
+		.stats {
+			gap: 0.5rem;
+
+			.statItem {
+				h4 {
+					font-size: 1.5rem;
+				}
+
+				p {
+					font-size: 0.75rem;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,256 @@
+// liveRoom.module.scss — IvyLearner live class page
+
+$primary-green: #00bf63;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-dark: #718096;
+$gray-medium: #e2e8f0;
+$red: #e53e3e;
+$red-dark: #c0392b;
+
+// Full-screen dark canvas
+.page {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #0d0d0d;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    overflow: hidden;
+}
+
+// ── Top bar ────────────────────────────────────────────────────────
+.topBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 56px;
+    background: #1a1a1a;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+    z-index: 10;
+}
+
+.topBarLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.liveDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: $red;
+    box-shadow: 0 0 0 0 rgba($red, 0.7);
+    animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba($red, 0.7); }
+    70%  { box-shadow: 0 0 0 8px rgba($red, 0); }
+    100% { box-shadow: 0 0 0 0 rgba($red, 0); }
+}
+
+.liveLabel {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: $red;
+    background: rgba($red, 0.12);
+    border: 1px solid rgba($red, 0.35);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.roomTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.topBarRight {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+// Copy link button
+.copyBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba($primary-green, 0.12);
+    border: 1px solid rgba($primary-green, 0.4);
+    color: $primary-green;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+
+    &:hover {
+        background: rgba($primary-green, 0.22);
+        border-color: $primary-green;
+    }
+}
+
+// End class button
+.endBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: $red;
+    border: none;
+    color: $text-light;
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+
+    &:hover:not(:disabled) {
+        background: $red-dark;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba($red, 0.4);
+    }
+
+    &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// Leave button (students)
+.leaveBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.75);
+    padding: 7px 16px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+
+    &:hover {
+        background: rgba(255,255,255,0.14);
+        color: $text-light;
+    }
+}
+
+// ── Daily.co iframe ────────────────────────────────────────────────
+.iframeWrapper {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+// ── Host hint bar ──────────────────────────────────────────────────
+.hostHint {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba($primary-green, 0.08);
+    border-top: 1px solid rgba($primary-green, 0.2);
+    font-size: 0.82rem;
+    color: $light-green;
+    flex-shrink: 0;
+
+    svg { color: $primary-green; }
+}
+
+// ── Centred states (loading / error / ended) ───────────────────────
+.centred {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 16px;
+    color: rgba(255,255,255,0.7);
+    text-align: center;
+    padding: 40px;
+
+    h2 {
+        color: $text-light;
+        font-size: 1.6rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    p { color: rgba(255,255,255,0.6); margin: 0; }
+}
+
+.spinner {
+    font-size: 2rem;
+    color: $primary-green;
+    animation: spin 1s linear infinite;
+}
+
+.spinnerSm {
+    font-size: 0.85rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.errorIcon {
+    font-size: 2.5rem;
+    color: $red;
+}
+
+.endedIcon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba($red, 0.12);
+    border: 2px solid rgba($red, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: $red;
+}
+
+.backBtn {
+    background: $primary-green;
+    border: none;
+    color: $text-light;
+    padding: 10px 28px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+
+    &:hover {
+        background: darken($primary-green, 8%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba($primary-green, 0.3);
+    }
+}
