@@ -2,17 +2,11 @@
 
 import React, { useRef, useState, useEffect, useMemo, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import {
-  Float,
-  Stars,
-  Sparkles,
-  Billboard,
-  Text,
-} from '@react-three/drei';
+import { Stars, Sparkles, Billboard, Text } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// MOCK DATA
+// DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const DEMO_QUESTIONS = [
   { question: 'What does HTML stand for?', optionA: 'Hyperlinks and Text Markup Language', optionB: 'HyperText Markup Language', optionC: 'Home Tool Markup Language', optionD: 'Hyper Transfer Markup Language', correctAnswer: 'B' as const },
@@ -28,429 +22,474 @@ const MAX_PLAYER_HP  = 100;
 const CORRECT_DAMAGE = 20;
 const WRONG_DAMAGE   = 15;
 const ANSWER_TIMEOUT = 15;
-
 type AnswerState = 'idle' | 'selected' | 'correct' | 'wrong';
+const c = (x: React.CSSProperties): React.CSSProperties => x;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STYLE HELPERS — typed properly so TS is happy
+// LAVA GROUND — bubbling displacement
 // ─────────────────────────────────────────────────────────────────────────────
-function s(styles: React.CSSProperties): React.CSSProperties {
-  return styles;
-}
+function LavaGround({ color }: { color: string }) {
+  const geoRef = useRef<THREE.PlaneGeometry>(null!);
+  const matRef = useRef<THREE.MeshStandardMaterial>(null!);
 
-function optionStyle(state: AnswerState): React.CSSProperties {
-  const bgMap: Record<AnswerState, string> = {
-    correct:  'rgba(34,197,94,0.12)',
-    wrong:    'rgba(239,68,68,0.10)',
-    selected: 'rgba(168,85,247,0.12)',
-    idle:     'rgba(26,10,38,0.80)',
-  };
-  const borderMap: Record<AnswerState, string> = {
-    correct:  '#22c55e',
-    wrong:    '#ef4444',
-    selected: '#a855f7',
-    idle:     '#44445a',
-  };
-  const shadowMap: Record<AnswerState, string> = {
-    correct:  '0 0 16px rgba(34,197,94,0.3)',
-    wrong:    '0 0 12px rgba(239,68,68,0.2)',
-    selected: 'none',
-    idle:     'none',
-  };
-  return {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10px',
-    padding: '11px 16px',
-    borderRadius: '8px',
-    cursor: state === 'idle' ? 'pointer' : 'default',
-    textAlign: 'left' as const,
-    border: '1px solid',
-    fontFamily: "'IBM Plex Mono', monospace",
-    fontSize: '0.75rem',
-    transition: 'all 0.2s',
-    lineHeight: 1.3,
-    background: bgMap[state],
-    borderColor: borderMap[state],
-    boxShadow: shadowMap[state],
-    color: '#e2e2f0',
-  };
-}
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    if (matRef.current) matRef.current.emissiveIntensity = 0.4 + Math.sin(t * 0.7) * 0.2;
+    if (geoRef.current) {
+      const pos = geoRef.current.attributes.position;
+      for (let i = 0; i < pos.count; i++) {
+        const x = pos.getX(i), y = pos.getY(i);
+        pos.setZ(i, Math.sin(x * 1.5 + t * 1.2) * 0.08 + Math.cos(y * 1.8 + t * 0.9) * 0.06);
+      }
+      pos.needsUpdate = true;
+      geoRef.current.computeVertexNormals();
+    }
+  });
 
-function optionLetterStyle(state: AnswerState): React.CSSProperties {
-  const colorMap: Record<AnswerState, string> = {
-    correct:  '#22c55e',
-    wrong:    '#ef4444',
-    selected: '#a855f7',
-    idle:     '#a855f7',
-  };
-  return {
-    fontFamily: "'Syne', sans-serif",
-    fontWeight: 800,
-    fontSize: '0.8rem',
-    minWidth: '16px',
-    color: colorMap[state],
-  };
+  return (
+    <group position={[0, -2.5, 0]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry ref={geoRef} args={[14, 14, 32, 32]} />
+        <meshStandardMaterial ref={matRef} color="#1a0000" emissive={color} emissiveIntensity={0.4} roughness={0.9} metalness={0.1} />
+      </mesh>
+      {/* Lava cracks */}
+      {[0, 0.8, -0.6, 1.4].map((rz, i) => (
+        <mesh key={i} rotation={[-Math.PI / 2, 0, rz]} position={[0, 0.01, 0]}>
+          <planeGeometry args={[5 - i * 0.5, 0.04]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={3} transparent opacity={0.9} />
+        </mesh>
+      ))}
+      {/* Rune rings */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[2.8, 3.0, 64]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} transparent opacity={0.7} />
+      </mesh>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
+        <ringGeometry args={[1.4, 1.5, 48]} />
+        <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2} transparent opacity={0.6} />
+      </mesh>
+      <pointLight color={color} intensity={4} distance={6} decay={2} position={[0, 0.5, 0]} />
+    </group>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// STATIC STYLES
+// DRAGON — organic capsule/sphere-based body, swept wings, sculpted head
 // ─────────────────────────────────────────────────────────────────────────────
-const ROOT      = s({ position: 'fixed', inset: 0, background: '#000', display: 'flex', flexDirection: 'column', fontFamily: "'IBM Plex Mono', monospace", zIndex: 1000, overflow: 'hidden' });
-const CANVAS    = s({ position: 'absolute', inset: 0, zIndex: 1 });
-const OVERLAY   = s({ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100vh', pointerEvents: 'none' });
-const HEADER    = s({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 24px', background: 'rgba(10,0,16,0.85)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #44445a', pointerEvents: 'auto' });
-const EXIT_BTN  = s({ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.68rem', letterSpacing: '0.1em', textTransform: 'uppercase', background: 'transparent', color: '#9999bb', border: '1px solid #44445a', borderRadius: '4px', padding: '6px 14px', cursor: 'pointer' });
-const H_TITLE   = s({ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '0.9rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#d946ef', textShadow: '0 0 20px rgba(217,70,239,0.5)' });
-const H_SUB     = s({ fontSize: '0.58rem', color: '#9999bb', letterSpacing: '0.08em', marginTop: '2px' });
-const Q_COUNTER = s({ fontFamily: "'Syne', sans-serif", fontSize: '0.8rem', color: '#9999bb', letterSpacing: '0.1em' });
-const ARENA     = s({ flex: 1 });
-const BOTTOM    = s({ background: 'rgba(10,0,16,0.92)', backdropFilter: 'blur(16px)', borderTop: '1px solid #44445a', padding: '16px 24px 20px', pointerEvents: 'auto' });
-const HP_ROW    = s({ display: 'flex', gap: '16px', marginBottom: '14px', alignItems: 'center' });
-const HP_BLOCK  = s({ flex: 1 });
-const HP_LABEL  = s({ display: 'flex', justifyContent: 'space-between', fontSize: '0.58rem', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '5px' });
-const HP_BAR    = s({ height: '8px', background: '#1a1a26', borderRadius: '4px', overflow: 'hidden', border: '1px solid #44445a' });
-const TIMER_BLK = s({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2px', minWidth: '56px' });
-const Q_BOX     = s({ background: 'rgba(28,10,40,0.9)', border: '1px solid rgba(168,85,247,0.35)', borderRadius: '10px', padding: '16px 20px', marginBottom: '12px' });
-const Q_TEXT    = s({ fontFamily: "'Syne', sans-serif", fontWeight: 600, fontSize: 'clamp(0.85rem, 2vw, 1rem)', color: '#ffffff', lineHeight: 1.5, margin: 0 });
-const OPTS_GRID = s({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' });
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 3-D DRAGON
-// ─────────────────────────────────────────────────────────────────────────────
-function DragonBody({
-  hpPct, isHit, isDead, fireActive,
-}: {
+function Dragon({ hpPct, isHit, isDead, fireActive }: {
   hpPct: number; isHit: boolean; isDead: boolean; fireActive: boolean;
 }) {
-  const groupRef    = useRef<THREE.Group>(null!);
-  const bodyRef     = useRef<THREE.Mesh>(null!);
-  const headRef     = useRef<THREE.Group>(null!);
-  const wingLRef    = useRef<THREE.Group>(null!);
-  const wingRRef    = useRef<THREE.Group>(null!);
-  const eyeLRef     = useRef<THREE.Mesh>(null!);
-  const eyeRRef     = useRef<THREE.Mesh>(null!);
-  const tailRef     = useRef<THREE.Group>(null!);
-  const hitFlash    = useRef(0);
+  const rootRef  = useRef<THREE.Group>(null!);
+  const bodyRef  = useRef<THREE.Mesh>(null!);
+  const neckRef  = useRef<THREE.Group>(null!);
+  const headRef  = useRef<THREE.Group>(null!);
+  const jawRef   = useRef<THREE.Mesh>(null!);
+  const wingLRef = useRef<THREE.Group>(null!);
+  const wingRRef = useRef<THREE.Group>(null!);
+  const tailRef  = useRef<THREE.Group>(null!);
+  const eyeLRef  = useRef<THREE.Mesh>(null!);
+  const eyeRRef  = useRef<THREE.Mesh>(null!);
+  const hitFlash = useRef(0);
 
-  const dragonColor = useMemo(() => {
-    if (hpPct > 0.6) return new THREE.Color('#d946ef');
-    if (hpPct > 0.3) return new THREE.Color('#f59e0b');
-    return new THREE.Color('#ef4444');
+  const col = useMemo(() => {
+    if (hpPct > 0.6) return new THREE.Color('#c026d3');
+    if (hpPct > 0.3) return new THREE.Color('#ea580c');
+    return new THREE.Color('#dc2626');
   }, [hpPct]);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
-    if (!groupRef.current) return;
+    if (!rootRef.current) return;
 
     if (isDead) {
-      groupRef.current.rotation.z = THREE.MathUtils.lerp(groupRef.current.rotation.z, -0.8, 0.03);
-      groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, -2.5, 0.025);
+      rootRef.current.rotation.z = THREE.MathUtils.lerp(rootRef.current.rotation.z, -1.1, 0.02);
+      rootRef.current.position.y = THREE.MathUtils.lerp(rootRef.current.position.y, -3.5, 0.018);
       return;
     }
 
-    groupRef.current.position.y = Math.sin(t * 0.8) * 0.18;
-    groupRef.current.rotation.y = Math.sin(t * 0.3) * 0.12;
+    rootRef.current.position.y = Math.sin(t * 0.7) * 0.22 + 0.1;
+    rootRef.current.position.x = Math.sin(t * 0.35) * 0.12;
+    rootRef.current.rotation.y = Math.sin(t * 0.28) * 0.14;
+    rootRef.current.rotation.z = Math.sin(t * 0.5) * 0.04;
 
-    if (headRef.current) {
-      headRef.current.rotation.x = Math.sin(t * 1.1) * 0.08;
-      headRef.current.rotation.y = Math.sin(t * 0.5) * 0.15;
+    if (neckRef.current) {
+      neckRef.current.rotation.x = 0.22 + Math.sin(t * 0.9) * 0.06;
+      neckRef.current.rotation.y = Math.sin(t * 0.45) * 0.12;
     }
-    if (wingLRef.current) wingLRef.current.rotation.z =  0.4 + Math.sin(t * 2.2) * 0.3;
-    if (wingRRef.current) wingRRef.current.rotation.z = -0.4 - Math.sin(t * 2.2) * 0.3;
-    if (tailRef.current)  tailRef.current.rotation.y  = Math.sin(t * 1.5) * 0.4;
+    if (headRef.current) {
+      headRef.current.rotation.x = Math.sin(t * 1.1) * 0.07 - 0.05;
+      headRef.current.rotation.y = Math.sin(t * 0.6) * 0.18;
+    }
+    if (jawRef.current) {
+      jawRef.current.rotation.x = fireActive
+        ? 0.35 + Math.sin(t * 8) * 0.1
+        : 0.04 + Math.abs(Math.sin(t * 0.4)) * 0.06;
+    }
+    if (wingLRef.current) {
+      wingLRef.current.rotation.z = 0.3 + Math.sin(t * 2.1) * 0.35 + Math.sin(t * 4.3) * 0.05;
+      wingLRef.current.rotation.x = Math.sin(t * 1.3) * 0.08;
+    }
+    if (wingRRef.current) {
+      wingRRef.current.rotation.z = -0.3 - Math.sin(t * 2.1 + 0.3) * 0.35;
+      wingRRef.current.rotation.x = Math.sin(t * 1.3 + 0.2) * 0.08;
+    }
+    if (tailRef.current) {
+      tailRef.current.rotation.y = Math.sin(t * 1.8) * 0.45;
+      tailRef.current.rotation.z = Math.sin(t * 1.2) * 0.12;
+    }
 
-    const eyeI = 0.8 + Math.sin(t * 3) * 0.2;
+    const eyeI = 1.2 + Math.sin(t * 2.5) * 0.4;
     if (eyeLRef.current) (eyeLRef.current.material as THREE.MeshStandardMaterial).emissiveIntensity = eyeI;
     if (eyeRRef.current) (eyeRRef.current.material as THREE.MeshStandardMaterial).emissiveIntensity = eyeI;
 
     if (isHit) hitFlash.current = 1.0;
     if (hitFlash.current > 0) {
-      hitFlash.current -= 0.08;
-      if (bodyRef.current) {
-        const m = bodyRef.current.material as THREE.MeshStandardMaterial;
-        m.emissiveIntensity = hitFlash.current * 3;
-        m.emissive.set('#ffffff');
-      }
-    } else if (bodyRef.current) {
-      const m = bodyRef.current.material as THREE.MeshStandardMaterial;
-      m.emissiveIntensity = 0.1;
-      m.emissive.copy(dragonColor);
+      hitFlash.current = Math.max(0, hitFlash.current - 0.07);
+      const m = bodyRef.current?.material as THREE.MeshStandardMaterial | undefined;
+      if (m) { m.emissiveIntensity = hitFlash.current * 5; m.emissive.setHex(0xffffff); }
+    } else {
+      const m = bodyRef.current?.material as THREE.MeshStandardMaterial | undefined;
+      if (m) { m.emissiveIntensity = 0.15; m.emissive.copy(col); }
     }
   });
 
+  const skin = '#1c0a28';
+  const dark = '#0e0516';
+
   return (
-    <group ref={groupRef} position={[0, 0.5, 0]}>
-      {/* BODY */}
+    <group ref={rootRef} position={[0, 0.3, 0]}>
+      {/* TORSO */}
       <mesh ref={bodyRef} castShadow>
-        <sphereGeometry args={[0.85, 16, 12]} />
-        <meshStandardMaterial color="#1a0a20" emissive={dragonColor} emissiveIntensity={0.1} roughness={0.3} metalness={0.7} />
+        <sphereGeometry args={[1.0, 24, 18]} />
+        <meshStandardMaterial color={skin} emissive={col} emissiveIntensity={0.15} roughness={0.35} metalness={0.65} />
       </mesh>
-      <mesh position={[0, -0.1, 0.05]}>
-        <sphereGeometry args={[0.7, 12, 8]} />
-        <meshStandardMaterial color="#2d0a3e" roughness={0.5} metalness={0.5} transparent opacity={0.6} />
+      <mesh position={[0, 0.1, 0.65]}>
+        <sphereGeometry args={[0.6, 16, 12]} />
+        <meshStandardMaterial color={skin} roughness={0.3} metalness={0.7} />
       </mesh>
-      {/* CHEST GLOW */}
-      <mesh position={[0, 0, 0.7]}>
-        <sphereGeometry args={[0.3, 8, 8]} />
-        <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={1.5} transparent opacity={0.4} />
+      <mesh position={[0, -0.55, 0.35]}>
+        <sphereGeometry args={[0.55, 14, 10]} />
+        <meshStandardMaterial color="#2d1040" roughness={0.5} metalness={0.4} />
       </mesh>
+      {/* Soul gem */}
+      <mesh position={[0, 0.05, 0.85]}>
+        <octahedronGeometry args={[0.18, 1]} />
+        <meshStandardMaterial color={col} emissive={col} emissiveIntensity={4} transparent opacity={0.9} roughness={0} metalness={1} />
+      </mesh>
+      <pointLight color={col} intensity={3} distance={3} decay={2} position={[0, 0.05, 0.9]} />
+      {/* Shoulders */}
+      {([-0.75, 0.75] as number[]).map((x, i) => (
+        <mesh key={i} position={[x, 0.2, 0.15]}>
+          <sphereGeometry args={[0.42, 12, 10]} />
+          <meshStandardMaterial color={skin} roughness={0.4} metalness={0.6} />
+        </mesh>
+      ))}
+
       {/* NECK */}
-      <mesh position={[0, 0.95, 0.3]} rotation={[0.5, 0, 0]}>
-        <cylinderGeometry args={[0.28, 0.38, 0.7, 10]} />
-        <meshStandardMaterial color="#1a0a20" emissive={dragonColor} emissiveIntensity={0.08} roughness={0.4} metalness={0.6} />
-      </mesh>
-      {/* HEAD */}
-      <group ref={headRef} position={[0, 1.55, 0.5]}>
-        <mesh castShadow>
-          <sphereGeometry args={[0.55, 14, 10]} />
-          <meshStandardMaterial color="#1a0a20" emissive={dragonColor} emissiveIntensity={0.12} roughness={0.3} metalness={0.7} />
+      <group ref={neckRef} position={[0, 0.85, 0.45]}>
+        <mesh rotation={[0.3, 0, 0]}>
+          <cylinderGeometry args={[0.32, 0.45, 0.6, 12]} />
+          <meshStandardMaterial color={skin} roughness={0.35} metalness={0.6} />
         </mesh>
-        <mesh position={[0, -0.22, 0.42]} rotation={[0.4, 0, 0]}>
-          <boxGeometry args={[0.42, 0.24, 0.5]} />
-          <meshStandardMaterial color="#150818" roughness={0.4} metalness={0.5} />
+        <mesh position={[0, 0.45, 0.12]} rotation={[0.5, 0, 0]}>
+          <cylinderGeometry args={[0.24, 0.32, 0.5, 10]} />
+          <meshStandardMaterial color={skin} roughness={0.35} metalness={0.6} />
         </mesh>
-        {/* Nostrils */}
-        {([-0.1, 0.1] as number[]).map((x, i) => (
-          <mesh key={i} position={[x, -0.28, 0.68]}>
-            <sphereGeometry args={[0.05, 6, 6]} />
-            <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={2} />
+        {[0, 0.18, 0.36].map((y, i) => (
+          <mesh key={i} position={[0, y, -0.12 - i * 0.04]} rotation={[-0.3, 0, 0]}>
+            <coneGeometry args={[0.06 - i * 0.01, 0.2 - i * 0.03, 5]} />
+            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.6} roughness={0.2} />
           </mesh>
         ))}
-        {/* Eyes */}
-        {([-0.28, 0.28] as number[]).map((x, i) => (
-          <group key={i} position={[x, 0.08, 0.4]}>
-            <mesh>
-              <sphereGeometry args={[0.14, 10, 10]} />
-              <meshStandardMaterial color="#050010" />
+
+        {/* HEAD */}
+        <group ref={headRef} position={[0, 0.75, 0.3]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.58, 18, 14]} />
+            <meshStandardMaterial color={skin} emissive={col} emissiveIntensity={0.1} roughness={0.3} metalness={0.7} />
+          </mesh>
+          {/* Brow */}
+          <mesh position={[0, 0.22, 0.42]} rotation={[0.4, 0, 0]}>
+            <boxGeometry args={[0.7, 0.12, 0.3]} />
+            <meshStandardMaterial color={dark} roughness={0.4} metalness={0.5} />
+          </mesh>
+          {/* Snout */}
+          <mesh position={[0, -0.08, 0.52]} rotation={[0.2, 0, 0]}>
+            <boxGeometry args={[0.44, 0.22, 0.58]} />
+            <meshStandardMaterial color={skin} roughness={0.35} metalness={0.55} />
+          </mesh>
+          <mesh position={[0, -0.1, 0.82]}>
+            <sphereGeometry args={[0.16, 10, 8]} />
+            <meshStandardMaterial color={dark} roughness={0.4} metalness={0.5} />
+          </mesh>
+          {/* Nostrils */}
+          {([-0.1, 0.1] as number[]).map((x, i) => (
+            <mesh key={i} position={[x, -0.06, 0.9]}>
+              <sphereGeometry args={[0.045, 7, 7]} />
+              <meshStandardMaterial color={col} emissive={col} emissiveIntensity={3} />
             </mesh>
-            <mesh ref={i === 0 ? eyeLRef : eyeRRef} position={[0, 0, 0.08]}>
-              <sphereGeometry args={[0.09, 8, 8]} />
-              <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.9} />
+          ))}
+          {/* Jaw */}
+          <mesh ref={jawRef} position={[0, -0.24, 0.38]}>
+            <boxGeometry args={[0.38, 0.16, 0.52]} />
+            <meshStandardMaterial color={dark} roughness={0.4} metalness={0.5} />
+          </mesh>
+          {/* Upper teeth */}
+          {[-0.14, -0.05, 0.05, 0.14].map((x, i) => (
+            <mesh key={i} position={[x, -0.16, 0.66]}>
+              <coneGeometry args={[0.025, 0.1, 4]} />
+              <meshStandardMaterial color="#e8e0f0" emissive="#ffffff" emissiveIntensity={0.3} roughness={0.1} />
             </mesh>
-          </group>
-        ))}
-        {/* Horns */}
-        <mesh position={[-0.25, 0.5, -0.1]} rotation={[0.3,  0.2, -0.3]}>
-          <coneGeometry args={[0.07, 0.55, 6]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.4} roughness={0.2} />
-        </mesh>
-        <mesh position={[ 0.25, 0.5, -0.1]} rotation={[0.3, -0.2,  0.3]}>
-          <coneGeometry args={[0.07, 0.55, 6]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.4} roughness={0.2} />
-        </mesh>
-        {/* Side spikes */}
-        <mesh position={[-0.52, 0.1, 0]} rotation={[0, 0, -0.8]}>
-          <coneGeometry args={[0.04, 0.3, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.3} />
-        </mesh>
-        <mesh position={[ 0.52, 0.1, 0]} rotation={[0, 0,  0.8]}>
-          <coneGeometry args={[0.04, 0.3, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.3} />
-        </mesh>
-        {/* Dead X eyes */}
-        {isDead && ([-0.28, 0.28] as number[]).map((x, i) => (
-          <group key={i}>
-            <mesh position={[x, 0.08, 0.52]} rotation={[0, 0,  Math.PI / 4]}>
-              <boxGeometry args={[0.22, 0.03, 0.02]} />
-              <meshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
+          ))}
+          {/* Lower teeth */}
+          {[-0.1, 0, 0.1].map((x, i) => (
+            <mesh key={i} position={[x, -0.28, 0.62]} rotation={[Math.PI, 0, 0]}>
+              <coneGeometry args={[0.022, 0.08, 4]} />
+              <meshStandardMaterial color="#d8d0e8" roughness={0.1} />
             </mesh>
-            <mesh position={[x, 0.08, 0.52]} rotation={[0, 0, -Math.PI / 4]}>
-              <boxGeometry args={[0.22, 0.03, 0.02]} />
-              <meshStandardMaterial color="white" emissive="white" emissiveIntensity={2} />
+          ))}
+          {/* EYES */}
+          {([-0.3, 0.3] as number[]).map((x, i) => (
+            <group key={i} position={[x, 0.1, 0.44]}>
+              <mesh>
+                <sphereGeometry args={[0.16, 12, 10]} />
+                <meshStandardMaterial color="#03000a" roughness={0.1} metalness={0.9} />
+              </mesh>
+              <mesh ref={i === 0 ? eyeLRef : eyeRRef} position={[0, 0, 0.1]}>
+                <sphereGeometry args={[0.1, 10, 10]} />
+                <meshStandardMaterial color={col} emissive={col} emissiveIntensity={1.5} roughness={0} metalness={1} />
+              </mesh>
+              <mesh position={[0, 0, 0.18]}>
+                <capsuleGeometry args={[0.02, 0.08, 4, 8]} />
+                <meshStandardMaterial color="#000000" roughness={0.1} />
+              </mesh>
+              <pointLight color={col} intensity={1.2} distance={1.5} decay={3} />
+            </group>
+          ))}
+          {/* HORNS */}
+          {([-1, 1] as number[]).map((side, i) => (
+            <group key={i} position={[side * 0.28, 0.48, -0.05]}>
+              <mesh rotation={[0.1, side * 0.3, side * -0.35]}>
+                <coneGeometry args={[0.065, 0.7, 7]} />
+                <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.5} roughness={0.15} metalness={0.8} />
+              </mesh>
+              <mesh position={[side * 0.08, 0.35, -0.04]} rotation={[0.2, side * 0.5, side * -0.5]}>
+                <coneGeometry args={[0.035, 0.4, 6]} />
+                <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.4} roughness={0.2} />
+              </mesh>
+            </group>
+          ))}
+          {/* Crest spikes */}
+          {[-0.22, 0, 0.22].map((x, i) => (
+            <mesh key={i} position={[x, 0.58 - i * 0.04, -0.08]} rotation={[-0.2, 0, x * 0.5]}>
+              <coneGeometry args={[0.03, 0.28 - i * 0.04, 5]} />
+              <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.7} roughness={0.1} />
             </mesh>
-          </group>
-        ))}
+          ))}
+          {/* Dead X eyes */}
+          {isDead && ([-0.3, 0.3] as number[]).map((x, i) => (
+            <group key={i}>
+              {[Math.PI / 4, -Math.PI / 4].map((rot, j) => (
+                <mesh key={j} position={[x, 0.1, 0.54]} rotation={[0, 0, rot]}>
+                  <boxGeometry args={[0.28, 0.035, 0.02]} />
+                  <meshStandardMaterial color="white" emissive="white" emissiveIntensity={3} />
+                </mesh>
+              ))}
+            </group>
+          ))}
+          {/* Fire breath */}
+          {fireActive && (
+            <group position={[0, -0.12, 1.05]}>
+              <Sparkles count={50} scale={[1.8, 0.5, 0.5]} size={4} speed={2} color="#f97316" />
+              <Sparkles count={30} scale={[1.4, 0.35, 0.35]} size={2.5} speed={2.8} color="#fbbf24" />
+              <Sparkles count={20} scale={[1.0, 0.25, 0.25]} size={2} speed={3.5} color="#ef4444" />
+              <pointLight color="#f97316" intensity={5} distance={3} decay={2} />
+            </group>
+          )}
+        </group>
       </group>
+
       {/* WINGS */}
-      <group ref={wingLRef} position={[-0.85, 0.3, -0.1]} rotation={[0.1, -0.2, 0.4]}>
-        <mesh>
-          <boxGeometry args={[1.4, 0.04, 0.9]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.15} transparent opacity={0.75} roughness={0.2} side={THREE.DoubleSide} />
-        </mesh>
-        <mesh position={[0, 0, -0.35]} rotation={[0, 0, 0.1]}>
-          <cylinderGeometry args={[0.03, 0.01, 1.3, 6]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.4} roughness={0.1} />
-        </mesh>
-        <mesh position={[-0.65, 0, -0.4]} rotation={[0, 0, -0.5]}>
-          <coneGeometry args={[0.04, 0.25, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.5} />
-        </mesh>
-      </group>
-      <group ref={wingRRef} position={[0.85, 0.3, -0.1]} rotation={[0.1, 0.2, -0.4]}>
-        <mesh>
-          <boxGeometry args={[1.4, 0.04, 0.9]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.15} transparent opacity={0.75} roughness={0.2} side={THREE.DoubleSide} />
-        </mesh>
-        <mesh position={[0, 0, -0.35]} rotation={[0, 0, -0.1]}>
-          <cylinderGeometry args={[0.03, 0.01, 1.3, 6]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.4} roughness={0.1} />
-        </mesh>
-        <mesh position={[0.65, 0, -0.4]} rotation={[0, 0, 0.5]}>
-          <coneGeometry args={[0.04, 0.25, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.5} />
-        </mesh>
-      </group>
-      {/* ARMS + CLAWS */}
-      <mesh position={[-0.75, -0.3, 0.3]} rotation={[0.3, 0, 0.6]}>
-        <cylinderGeometry args={[0.1, 0.07, 0.6, 7]} />
-        <meshStandardMaterial color="#1a0a20" roughness={0.4} metalness={0.5} />
-      </mesh>
-      {[-0.15, 0, 0.15].map((x, i) => (
-        <mesh key={i} position={[-1.1 + x * 0.3, -0.65, 0.55]} rotation={[0.8, 0, 0.2 * (i - 1)]}>
-          <coneGeometry args={[0.03, 0.2, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.3} />
-        </mesh>
-      ))}
-      <mesh position={[0.75, -0.3, 0.3]} rotation={[0.3, 0, -0.6]}>
-        <cylinderGeometry args={[0.1, 0.07, 0.6, 7]} />
-        <meshStandardMaterial color="#1a0a20" roughness={0.4} metalness={0.5} />
-      </mesh>
-      {[-0.15, 0, 0.15].map((x, i) => (
-        <mesh key={i} position={[1.1 + x * 0.3, -0.65, 0.55]} rotation={[0.8, 0, -0.2 * (i - 1)]}>
-          <coneGeometry args={[0.03, 0.2, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.3} />
-        </mesh>
-      ))}
-      {/* TAIL */}
-      <group ref={tailRef} position={[0.2, -0.4, -0.8]}>
-        <mesh rotation={[0.4, 0.3, 0.1]}>
-          <cylinderGeometry args={[0.22, 0.05, 1.4, 8]} />
-          <meshStandardMaterial color="#1a0a20" emissive={dragonColor} emissiveIntensity={0.06} roughness={0.4} metalness={0.5} />
-        </mesh>
-        {[0, 0.3, 0.6].map((offset, i) => (
-          <mesh key={i} position={[0, -0.3 - offset, 0.15 + offset * 0.1]} rotation={[-0.5, 0, 0]}>
-            <coneGeometry args={[0.04 - i * 0.01, 0.2 - i * 0.04, 5]} />
-            <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.4} />
-          </mesh>
-        ))}
-      </group>
-      {/* BACK SPINES */}
       {([
-        { pos: [0, 0.88, -0.3] as [number,number,number], sc: 1.0 },
-        { pos: [0, 0.82, -0.1] as [number,number,number], sc: 0.8 },
-        { pos: [0, 0.75,  0.1] as [number,number,number], sc: 0.65 },
-      ]).map(({ pos, sc }, i) => (
-        <mesh key={i} position={pos} rotation={[0.15, 0, 0]}>
-          <coneGeometry args={[0.045 * sc, 0.35 * sc, 5]} />
-          <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.5} roughness={0.1} />
+        { side: -1, pos: [-1.0, 0.35, -0.15] as [number,number,number], rot: [0.15, -0.25, 0.35] as [number,number,number] },
+        { side:  1, pos: [ 1.0, 0.35, -0.15] as [number,number,number], rot: [0.15,  0.25,-0.35] as [number,number,number] },
+      ]).map(({ side, pos, rot }, wi) => (
+        <group key={wi} ref={wi === 0 ? wingLRef : wingRRef} position={pos} rotation={rot}>
+          <mesh>
+            <boxGeometry args={[1.7, 0.035, 1.05]} />
+            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.12} transparent opacity={0.72} roughness={0.15} side={THREE.DoubleSide} />
+          </mesh>
+          <mesh position={[side * 0.7, 0, -0.3]} rotation={[0, side * 0.3, side * 0.1]}>
+            <boxGeometry args={[0.5, 0.025, 0.6]} />
+            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.1} transparent opacity={0.6} roughness={0.15} side={THREE.DoubleSide} />
+          </mesh>
+          {/* Ribs */}
+          {[
+            { x: side * -0.2, len: 1.2 },
+            { x: side *  0.2, len: 1.0 },
+            { x: side *  0.6, len: 0.8 },
+          ].map((rib, i) => (
+            <mesh key={i} position={[rib.x, 0, -0.4]} rotation={[0, 0, 0.1 * side]}>
+              <cylinderGeometry args={[0.028, 0.012, rib.len, 6]} />
+              <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.55} roughness={0.1} metalness={0.8} />
+            </mesh>
+          ))}
+          {/* Wingtip claw */}
+          <mesh position={[side * 0.92, 0, -0.58]} rotation={[0, 0, side * 0.6]}>
+            <coneGeometry args={[0.04, 0.3, 5]} />
+            <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.6} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ARMS */}
+      {([-1, 1] as number[]).map((side, si) => (
+        <group key={si} position={[side * 0.88, -0.25, 0.55]} rotation={[0.4, 0, side * 0.55]}>
+          <mesh>
+            <capsuleGeometry args={[0.1, 0.45, 6, 8]} />
+            <meshStandardMaterial color={skin} roughness={0.4} metalness={0.55} />
+          </mesh>
+          <mesh position={[0, -0.42, 0.15]} rotation={[0.5, 0, 0]}>
+            <capsuleGeometry args={[0.08, 0.35, 6, 8]} />
+            <meshStandardMaterial color={skin} roughness={0.4} metalness={0.55} />
+          </mesh>
+          {[-0.12, 0, 0.12].map((cx, ci) => (
+            <mesh key={ci} position={[cx + side * 0.02, -0.72, 0.38]} rotation={[0.9, 0, side * 0.15 * (ci - 1)]}>
+              <coneGeometry args={[0.03, 0.22, 5]} />
+              <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.4} roughness={0.1} metalness={0.9} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      {/* DORSAL SPINES */}
+      {[
+        { z: -0.55, y: 1.02, sc: 1.1 },
+        { z: -0.30, y: 0.98, sc: 0.9 },
+        { z: -0.05, y: 0.94, sc: 0.75 },
+        { z:  0.20, y: 0.88, sc: 0.6 },
+        { z:  0.42, y: 0.82, sc: 0.45 },
+      ].map(({ z, y, sc }, i) => (
+        <mesh key={i} position={[0, y, z]} rotation={[-0.15, 0, 0]}>
+          <coneGeometry args={[0.05 * sc, 0.42 * sc, 6]} />
+          <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.65} roughness={0.1} metalness={0.85} />
         </mesh>
       ))}
-      {/* DRAGON LIGHT */}
-      <pointLight color={dragonColor} intensity={2.5} distance={4} decay={2} />
-      {/* FIRE BREATH */}
-      {fireActive && <FireBreath color={dragonColor} />}
+
+      {/* TAIL */}
+      <group ref={tailRef} position={[0.15, -0.5, -0.95]}>
+        <mesh rotation={[0.5, 0.2, 0.1]}>
+          <capsuleGeometry args={[0.2, 0.9, 6, 8]} />
+          <meshStandardMaterial color={skin} roughness={0.4} metalness={0.5} />
+        </mesh>
+        <mesh position={[0.15, -0.7, -0.5]} rotation={[0.6, 0.4, 0.15]}>
+          <capsuleGeometry args={[0.13, 0.7, 5, 7]} />
+          <meshStandardMaterial color={skin} roughness={0.4} metalness={0.5} />
+        </mesh>
+        <mesh position={[0.35, -1.2, -0.85]} rotation={[0.5, 0.5, 0.1]}>
+          <capsuleGeometry args={[0.07, 0.55, 4, 6]} />
+          <meshStandardMaterial color={skin} roughness={0.4} metalness={0.5} />
+        </mesh>
+        <mesh position={[0.5, -1.65, -1.1]} rotation={[0.4, 0.6, 0.3]}>
+          <coneGeometry args={[0.12, 0.38, 4]} />
+          <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.5} roughness={0.1} metalness={0.9} />
+        </mesh>
+      </group>
+
+      {/* HIND LEGS */}
+      {([-1, 1] as number[]).map((side, si) => (
+        <group key={si} position={[side * 0.65, -0.7, -0.35]}>
+          <mesh rotation={[0.2, 0, side * 0.2]}>
+            <capsuleGeometry args={[0.14, 0.5, 6, 8]} />
+            <meshStandardMaterial color={skin} roughness={0.4} metalness={0.55} />
+          </mesh>
+          <mesh position={[side * 0.05, -0.55, 0.2]} rotation={[0.6, 0, 0]}>
+            <capsuleGeometry args={[0.11, 0.4, 5, 7]} />
+            <meshStandardMaterial color={skin} roughness={0.4} metalness={0.55} />
+          </mesh>
+          {[-0.1, 0, 0.1].map((cx, ci) => (
+            <mesh key={ci} position={[cx, -0.88, 0.38]} rotation={[0.7, 0, 0]}>
+              <coneGeometry args={[0.035, 0.2, 5]} />
+              <meshStandardMaterial color={col} emissive={col} emissiveIntensity={0.35} roughness={0.1} metalness={0.9} />
+            </mesh>
+          ))}
+        </group>
+      ))}
+
+      <pointLight color={col} intensity={3} distance={5} decay={2} />
     </group>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// FIRE BREATH
+// ORBITING RUNE SHARDS
 // ─────────────────────────────────────────────────────────────────────────────
-function FireBreath({ color }: { color: THREE.Color }) {
+function RuneShards({ color }: { color: string }) {
   const ref = useRef<THREE.Group>(null!);
-  useFrame(({ clock }) => {
-    if (ref.current) ref.current.scale.x = 0.9 + Math.sin(clock.elapsedTime * 8) * 0.1;
-  });
+  useFrame(({ clock }) => { if (ref.current) ref.current.rotation.y = clock.elapsedTime * 0.4; });
   return (
-    <group ref={ref} position={[-0.4, 1.45, 1.0]} rotation={[0, -0.5, 0.2]}>
-      <Sparkles count={40} scale={[1.5, 0.4, 0.4]} size={3} speed={1.2} color="#f59e0b" />
-      <Sparkles count={25} scale={[1.2, 0.3, 0.3]} size={2} speed={1.8} color="#ef4444" />
-      <mesh>
-        <coneGeometry args={[0.08, 0.8, 6]} />
-        <meshStandardMaterial color="#f59e0b" emissive="#f59e0b" emissiveIntensity={2} transparent opacity={0.4} />
-      </mesh>
-      <pointLight color="#f59e0b" intensity={3} distance={2.5} decay={2} />
+    <group ref={ref} position={[0, -0.2, 0]}>
+      {[...Array(14)].map((_, i) => {
+        const angle = (i / 14) * Math.PI * 2;
+        const r = 1.9 + Math.sin(i * 1.3) * 0.3;
+        const sc = 0.5 + Math.sin(i * 1.7) * 0.3;
+        return (
+          <mesh key={i} position={[Math.cos(angle) * r, Math.sin(i * 0.8) * 0.6, Math.sin(angle) * r]}
+            rotation={[i * 0.4, i * 0.7, i * 0.3]}>
+            <octahedronGeometry args={[0.08 * sc, 0]} />
+            <meshStandardMaterial color={color} emissive={color} emissiveIntensity={3} roughness={0} metalness={1} />
+          </mesh>
+        );
+      })}
     </group>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HIT BURST
+// HIT SHOCKWAVE RINGS
 // ─────────────────────────────────────────────────────────────────────────────
-function HitBurst({ active }: { active: boolean }) {
-  const ref      = useRef<THREE.Group>(null!);
-  const progress = useRef(0);
+function HitShockwave({ active }: { active: boolean }) {
+  const r1 = useRef<THREE.Mesh>(null!);
+  const r2 = useRef<THREE.Mesh>(null!);
+  const p  = useRef(0);
   useFrame(() => {
-    if (!ref.current) return;
-    if (active) progress.current = Math.min(progress.current + 0.12, 1);
-    else        progress.current = Math.max(progress.current - 0.08, 0);
-    ref.current.scale.setScalar(progress.current * 2.5);
-    ref.current.children.forEach((c) => {
-      const mat = (c as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
-      if (mat) mat.opacity = (1 - progress.current) * 0.8;
-    });
+    if (active) p.current = Math.min(p.current + 0.1, 1);
+    else        p.current = Math.max(p.current - 0.06, 0);
+    if (r1.current) { r1.current.scale.setScalar(1 + p.current * 3); (r1.current.material as THREE.MeshStandardMaterial).opacity = (1 - p.current) * 0.7; }
+    if (r2.current) { r2.current.scale.setScalar(1 + p.current * 2); (r2.current.material as THREE.MeshStandardMaterial).opacity = (1 - p.current) * 0.5; }
   });
   return (
-    <group ref={ref} position={[0, 0.5, 0]}>
-  {[0,1,2,3,4,5,6,7].map((i) => {
-    const angle = (i / 8) * Math.PI * 2;
-    return (
-      <mesh key={i} position={[Math.cos(angle) * 1.2, Math.sin(angle) * 0.6, 0]}>
-        <sphereGeometry args={[0.08, 5, 5]} />
-        <meshStandardMaterial color="#d946ef" emissive="#d946ef" emissiveIntensity={3} transparent opacity={0.8} />
+    <group position={[0, 0.3, 0]}>
+      <mesh ref={r1} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.5, 0.65, 32]} />
+        <meshStandardMaterial color="#d946ef" emissive="#d946ef" emissiveIntensity={4} transparent opacity={0} side={THREE.DoubleSide} />
       </mesh>
-    );
-  })}
-</group>
+      <mesh ref={r2} rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.3, 0.4, 32]} />
+        <meshStandardMaterial color="#ffffff" emissive="#ffffff" emissiveIntensity={6} transparent opacity={0} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ARENA FLOOR
-// ─────────────────────────────────────────────────────────────────────────────
-function ArenaFloor({ dragonColor }: { dragonColor: string }) {
-  const ref = useRef<THREE.Mesh>(null!);
-  useFrame(({ clock }) => {
-    if (ref.current) {
-      (ref.current.material as THREE.MeshStandardMaterial).emissiveIntensity =
-        0.05 + Math.sin(clock.elapsedTime * 0.5) * 0.03;
-    }
-  });
-  return (
-    <>
-      <mesh ref={ref} rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, 0]} receiveShadow>
-        <circleGeometry args={[6, 48]} />
-        <meshStandardMaterial color="#0a0010" emissive={dragonColor} emissiveIntensity={0.05} roughness={0.9} metalness={0.3} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.18, 0]}>
-        <ringGeometry args={[2.5, 2.7, 64]} />
-        <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.6} transparent opacity={0.5} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.17, 0]}>
-        <ringGeometry args={[1.2, 1.3, 32]} />
-        <meshStandardMaterial color={dragonColor} emissive={dragonColor} emissiveIntensity={0.8} transparent opacity={0.4} />
-      </mesh>
-    </>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FLOATING DAMAGE TEXT
+// FLOATING DAMAGE NUMBERS
 // ─────────────────────────────────────────────────────────────────────────────
 function DamageFloat({ text, good }: { text: string; good: boolean }) {
-  const ref   = useRef<THREE.Group>(null!);
-  const start = useRef(Date.now());
+  const ref = useRef<THREE.Group>(null!);
+  const t0  = useRef(Date.now());
   useFrame(() => {
     if (!ref.current) return;
-    const elapsed = (Date.now() - start.current) / 1000;
-    ref.current.position.y = 1.5 + elapsed * 1.8;
-    ref.current.children.forEach((c) => {
-      const mat = (c as any).material as THREE.MeshStandardMaterial | undefined;
-      if (mat) mat.opacity = Math.max(0, 1 - elapsed * 1.2);
-    });
+    const e = (Date.now() - t0.current) / 1000;
+    ref.current.position.y = 2.0 + e * 2.2;
+    ref.current.position.x = (good ? 0.6 : -0.6) + Math.sin(e * 3) * 0.1;
+    ref.current.scale.setScalar(Math.max(0, 1 - e * 0.6) * 1.4);
   });
   return (
-    <group ref={ref} position={[good ? 0.5 : -0.5, 1.5, 1]}>
+    <group ref={ref} position={[good ? 0.6 : -0.6, 2, 1.2]}>
       <Billboard>
-        <Text
-          fontSize={0.5}
-          color={good ? '#d946ef' : '#ef4444'}
-          anchorX="center"
-          anchorY="middle"
-          outlineWidth={0.02}
-          outlineColor="#000000"
-        >
+        <Text fontSize={good ? 0.7 : 0.55} color={good ? '#e879f9' : '#f87171'}
+          anchorX="center" anchorY="middle" outlineWidth={0.04} outlineColor="#000">
           {text}
         </Text>
       </Billboard>
@@ -465,98 +504,177 @@ function Scene({ hpPct, isHit, isDead, floats }: {
   hpPct: number; isHit: boolean; isDead: boolean;
   floats: { id: number; text: string; good: boolean }[];
 }) {
-  const dragonHex = hpPct > 0.6 ? '#d946ef' : hpPct > 0.3 ? '#f59e0b' : '#ef4444';
-  const fireActive = hpPct < 0.5 && !isDead;
+  const hex = hpPct > 0.6 ? '#c026d3' : hpPct > 0.3 ? '#ea580c' : '#dc2626';
+  const fire = hpPct < 0.5 && !isDead;
   return (
     <>
-      <ambientLight intensity={0.15} />
-      <pointLight position={[0, 4, 3]}   intensity={1.5} color="#7c3aed" />
-      <pointLight position={[-3, 1, 2]}  intensity={1.0} color="#4c1d95" />
-      <pointLight position={[3, 1, 2]}   intensity={0.8} color="#2d1b5e" />
-      {fireActive && <pointLight position={[-1.5, 1.5, 2]} intensity={2} color="#f59e0b" />}
-      <Stars radius={40} depth={30} count={1200} factor={3} saturation={0.5} fade speed={0.4} />
-      <Sparkles count={60} scale={8} size={1.5} speed={0.3} color={dragonHex} opacity={0.4} />
-      <ArenaFloor dragonColor={dragonHex} />
-      <Float speed={0} rotationIntensity={0} floatIntensity={0}>
-        <DragonBody hpPct={hpPct} isHit={isHit} isDead={isDead} fireActive={fireActive} />
-      </Float>
-      <HitBurst active={isHit} />
+      <ambientLight intensity={0.08} color="#200030" />
+      <pointLight position={[0, 6, 2]}  intensity={2.5} color="#9333ea" />
+      <pointLight position={[-5, 2, 1]} intensity={1.8} color="#6d28d9" />
+      <pointLight position={[5, 2, 1]}  intensity={1.2} color="#4c1d95" />
+      <pointLight position={[0, -1, 4]} intensity={1.0} color={hex} />
+      <pointLight position={[0, -2, 0]} intensity={3.5} color={hex} />
+      {fire && <pointLight position={[-0.5, 2.5, 2.5]} intensity={4} color="#f97316" />}
+      <Stars radius={60} depth={40} count={2000} factor={4} saturation={0.6} fade speed={0.3} />
+      <Sparkles count={80} scale={10} size={2}   speed={0.4} color={hex}     opacity={0.5} />
+      <Sparkles count={40} scale={6}  size={1.5} speed={0.8} color="#fbbf24" opacity={0.3} />
+      <LavaGround color={hex} />
+      {!isDead && <RuneShards color={hex} />}
+      <Dragon hpPct={hpPct} isHit={isHit} isDead={isDead} fireActive={fire} />
+      <HitShockwave active={isHit} />
       {floats.map(f => <DamageFloat key={f.id} text={f.text} good={f.good} />)}
-      <fog attach="fog" args={['#0a0010', 8, 20]} />
+      <fog attach="fog" args={['#0d0014', 10, 28]} />
     </>
   );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// HP FILL
+// HUD — SEGMENTED HP BAR
 // ─────────────────────────────────────────────────────────────────────────────
-function HpFill({ pct, type }: { pct: number; type: 'player' | 'boss' }) {
+function HpBar({ pct, type, shake }: { pct: number; type: 'player' | 'boss'; shake: boolean }) {
+  const cp = Math.max(0, Math.min(1, pct));
   const color = type === 'player'
-    ? pct > 0.5 ? '#22c55e' : pct > 0.25 ? '#f59e0b' : '#ef4444'
-    : pct > 0.6 ? '#d946ef' : pct > 0.3  ? '#f59e0b' : '#ef4444';
+    ? cp > 0.5 ? '#22c55e' : cp > 0.25 ? '#f59e0b' : '#ef4444'
+    : cp > 0.6 ? '#c026d3' : cp > 0.3  ? '#ea580c' : '#dc2626';
+  const segs = 20;
   return (
-    <div style={{ height: '100%', width: `${Math.max(0, pct * 100)}%`, background: color, borderRadius: '4px', transition: 'width 0.4s ease, background 0.4s', boxShadow: `0 0 8px ${color}` }} />
+    <div style={c({ display: 'flex', gap: '2px', animation: shake ? 'hpShake 0.35s ease' : 'none' })}>
+      {[...Array(segs)].map((_, i) => {
+        const filled = (i / segs) < cp;
+        return (
+          <div key={i} style={c({
+            flex: 1, height: '14px',
+            background: filled ? color : 'rgba(255,255,255,0.06)',
+            borderRadius: '2px',
+            boxShadow: filled ? `0 0 6px ${color}` : 'none',
+            transition: 'background 0.3s, box-shadow 0.3s',
+            clipPath: 'polygon(2px 0%, 100% 0%, calc(100% - 2px) 100%, 0% 100%)',
+          })} />
+        );
+      })}
+    </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TIMER SVG
-// ─────────────────────────────────────────────────────────────────────────────
-function TimerSVG({ seconds, max }: { seconds: number; max: number }) {
-  const r = 20, circ = 2 * Math.PI * r;
+// TIMER RING
+function TimerRing({ seconds, max }: { seconds: number; max: number }) {
+  const r = 26, circ = 2 * Math.PI * r;
   const prog = (seconds / max) * circ;
-  const col  = seconds > 8 ? '#a855f7' : seconds > 4 ? '#f59e0b' : '#ef4444';
+  const col = seconds > 8 ? '#a855f7' : seconds > 4 ? '#f59e0b' : '#ef4444';
+  const urgent = seconds <= 4;
   return (
-    <svg viewBox="0 0 48 48" width="48" height="48">
-      <circle cx="24" cy="24" r={r} fill="none" stroke="#1a1a26" strokeWidth="4" />
-      <circle cx="24" cy="24" r={r} fill="none" stroke={col} strokeWidth="4"
-        strokeDasharray={`${prog} ${circ}`} strokeDashoffset={circ / 4}
-        strokeLinecap="round" style={{ transition: 'stroke-dasharray 1s linear' }} />
-      <text x="24" y="29" textAnchor="middle" fill={col}
-        style={{ fontFamily: 'Syne, sans-serif', fontSize: '13px', fontWeight: 800 }}>
+    <div style={c({ position: 'relative', width: '64px', height: '64px', flexShrink: 0 })}>
+      <svg viewBox="0 0 60 60" width="64" height="64" style={{ position: 'absolute', inset: 0 }}>
+        <circle cx="30" cy="30" r={r} fill="rgba(0,0,0,0.5)" stroke="rgba(255,255,255,0.06)" strokeWidth="5" />
+        <circle cx="30" cy="30" r={r} fill="none" stroke={col} strokeWidth="5"
+          strokeDasharray={`${prog} ${circ}`} strokeDashoffset={circ / 4} strokeLinecap="round"
+          style={{ transition: 'stroke-dasharray 1s linear, stroke 0.3s', filter: `drop-shadow(0 0 4px ${col})` }} />
+      </svg>
+      <div style={c({
+        position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Syne', sans-serif", fontWeight: 800,
+        fontSize: urgent ? '1.4rem' : '1.1rem', color: col,
+        animation: urgent ? 'urgentPulse 0.5s ease-in-out infinite alternate' : 'none',
+        textShadow: `0 0 12px ${col}`,
+      })}>
         {seconds}
-      </text>
-    </svg>
+      </div>
+    </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
+// OPTION BUTTON
+function OptionBtn({ letter, text, state, onClick, disabled }: {
+  letter: string; text: string; state: AnswerState; onClick: () => void; disabled: boolean;
+}) {
+  const [hov, setHov] = useState(false);
+  const cfgs: Record<AnswerState, { bg: string; border: string; shadow: string }> = {
+    idle:     { bg: hov ? 'rgba(168,85,247,0.08)' : 'rgba(15,5,25,0.85)', border: hov ? '#7c3aed' : 'rgba(255,255,255,0.08)', shadow: hov ? '0 0 20px rgba(124,58,237,0.25)' : 'none' },
+    selected: { bg: 'rgba(168,85,247,0.15)', border: '#a855f7', shadow: '0 0 24px rgba(168,85,247,0.35)' },
+    correct:  { bg: 'rgba(34,197,94,0.12)',  border: '#22c55e', shadow: '0 0 28px rgba(34,197,94,0.4)' },
+    wrong:    { bg: 'rgba(239,68,68,0.10)',  border: '#ef4444', shadow: '0 0 20px rgba(239,68,68,0.3)' },
+  };
+  const cfg = cfgs[state];
+  const lc: Record<AnswerState, string> = { idle: '#a855f7', selected: '#c084fc', correct: '#22c55e', wrong: '#ef4444' };
+  return (
+    <button
+      style={c({
+        display: 'flex', alignItems: 'center', gap: '12px',
+        padding: '12px 18px', borderRadius: '10px',
+        cursor: state === 'idle' ? 'pointer' : 'default',
+        textAlign: 'left' as const,
+        border: `1px solid ${cfg.border}`,
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.76rem',
+        transition: 'all 0.18s cubic-bezier(0.4,0,0.2,1)',
+        lineHeight: 1.35, background: cfg.bg, boxShadow: cfg.shadow, color: '#e8e0f8',
+        transform: state === 'idle' && hov ? 'translateY(-1px)' : 'none',
+        backdropFilter: 'blur(8px)',
+      })}
+      onClick={onClick} disabled={disabled}
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+    >
+      <span style={c({
+        width: '28px', height: '28px', borderRadius: '6px', flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '0.85rem',
+        color: lc[state],
+        background: state === 'correct' ? 'rgba(34,197,94,0.15)' : state === 'wrong' ? 'rgba(239,68,68,0.15)' : 'rgba(168,85,247,0.12)',
+        border: `1px solid ${lc[state]}40`,
+      })}>
+        {letter}
+      </span>
+      <span style={{ flex: 1 }}>{text}</span>
+      {state === 'correct' && <span style={{ color: '#22c55e', fontSize: '1.1rem' }}>✓</span>}
+      {state === 'wrong'   && <span style={{ color: '#ef4444', fontSize: '1.1rem' }}>✗</span>}
+    </button>
+  );
+}
+
 // RESULT SCREEN
-// ─────────────────────────────────────────────────────────────────────────────
 function ResultScreen({ type, score, isFinalBoss, onRetry, onContinue, onExit }: {
   type: 'victory' | 'defeat'; score: number; isFinalBoss: boolean;
   onRetry: () => void; onContinue: () => void; onExit: () => void;
 }) {
-  const isWin = type === 'victory';
+  const win = type === 'victory';
   return (
-    <div style={s({ position: 'absolute', inset: 0, zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)' })}>
-      <div style={s({ background: '#0a0a0f', border: '1px solid #44445a', borderRadius: '16px', padding: '48px 40px', textAlign: 'center', maxWidth: '400px', width: '90%' })}>
-        <div style={{ fontSize: '3.5rem', marginBottom: '16px' }}>
-          {isWin ? (isFinalBoss ? '🏆' : '⚔') : '💀'}
+    <div style={c({ position: 'absolute', inset: 0, zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.88)', backdropFilter: 'blur(10px)' })}>
+      <div style={c({ position: 'absolute', inset: 0, background: win ? 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(192,38,211,0.12) 0%, transparent 70%)' : 'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(220,38,38,0.08) 0%, transparent 70%)' })} />
+      <div style={c({
+        position: 'relative',
+        background: 'linear-gradient(160deg, #0f0518 0%, #1a0a28 60%, #0f0518 100%)',
+        border: `1px solid ${win ? 'rgba(192,38,211,0.4)' : 'rgba(239,68,68,0.3)'}`,
+        borderRadius: '20px', padding: '52px 44px', textAlign: 'center',
+        maxWidth: '440px', width: '90%',
+        boxShadow: win ? '0 0 60px rgba(192,38,211,0.2)' : '0 0 40px rgba(220,38,38,0.15)',
+      })}>
+        <div style={c({ position: 'absolute', top: 0, left: '20%', right: '20%', height: '1px', background: win ? 'linear-gradient(90deg, transparent, #c026d3, transparent)' : 'linear-gradient(90deg, transparent, #dc2626, transparent)' })} />
+        <div style={{ fontSize: '4rem', marginBottom: '20px', filter: win ? 'drop-shadow(0 0 24px rgba(192,38,211,0.6))' : 'none' }}>
+          {win ? (isFinalBoss ? '🏆' : '⚔️') : '💀'}
         </div>
-        <h2 style={s({ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '2rem', color: '#fff', letterSpacing: '-0.03em', marginBottom: '10px' })}>
-          {isWin ? (isFinalBoss ? 'Dragon Slain!' : 'Boss Defeated!') : 'You Were Slain'}
+        <h2 style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '2.2rem', letterSpacing: '-0.03em', marginBottom: '10px', background: win ? 'linear-gradient(135deg, #e879f9, #a855f7)' : 'linear-gradient(135deg, #f87171, #ef4444)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' })}>
+          {win ? (isFinalBoss ? 'Dragon Slain!' : 'Boss Defeated!') : 'You Were Slain'}
         </h2>
-        <p style={s({ fontSize: '0.8rem', color: '#9999bb', lineHeight: 1.7, marginBottom: '24px' })}>
-          {isWin
-            ? isFinalBoss ? 'The dragon falls. You have mastered this course.' : 'Well fought. Next lesson unlocked.'
-            : 'The dragon was too strong. Study and try again.'}
+        <p style={c({ fontSize: '0.82rem', color: '#9d8ab8', lineHeight: 1.8, marginBottom: '28px' })}>
+          {win ? (isFinalBoss ? 'The dragon falls. This course is now yours.' : 'Well fought. Next lesson unlocked.') : 'The dragon was too strong. Study and return.'}
         </p>
-        <div style={s({ fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: '3rem', color: '#d946ef', textShadow: '0 0 24px rgba(217,70,239,0.5)', marginBottom: '4px' })}>{score}%</div>
-        <div style={s({ fontSize: '0.62rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#9999bb', marginBottom: '8px' })}>accuracy</div>
-        {isWin && (
-          <div style={s({ fontSize: '0.72rem', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '999px', padding: '5px 16px', display: 'inline-block', marginBottom: '24px' })}>
-            +{isFinalBoss ? 150 : 50} XP earned
+        <div style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '3.5rem', lineHeight: 1, background: 'linear-gradient(135deg, #e879f9, #c026d3)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' })}>
+          {score}%
+        </div>
+        <div style={c({ fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: '#6b5b8a', marginTop: '4px', marginBottom: win ? '16px' : '28px' })}>accuracy</div>
+        {win && (
+          <div style={c({ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.25)', borderRadius: '999px', padding: '6px 18px', marginBottom: '28px', background: 'rgba(251,191,36,0.06)' })}>
+            ⚡ +{isFinalBoss ? 150 : 50} XP earned
           </div>
         )}
-        <div style={s({ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: !isWin ? '24px' : '0' })}>
-          <button onClick={isWin ? onContinue : onRetry} style={s({ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.78rem', letterSpacing: '0.1em', textTransform: 'uppercase', padding: '13px 28px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '6px', cursor: 'pointer' })}>
-            {isWin ? (isFinalBoss ? 'Claim Certificate' : 'Continue →') : '↺ Try Again'}
+        <div style={c({ display: 'flex', flexDirection: 'column', gap: '10px' })}>
+          <button onClick={win ? onContinue : onRetry} style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.05em', padding: '15px 32px', background: 'linear-gradient(135deg, #7c3aed, #c026d3)', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', boxShadow: '0 0 30px rgba(124,58,237,0.35)' })}>
+            {win ? (isFinalBoss ? '🏆 Claim Certificate' : 'Continue →') : '↺ Try Again'}
           </button>
-          <button onClick={onExit} style={s({ fontFamily: 'IBM Plex Mono, monospace', fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '11px 28px', background: 'transparent', color: '#9999bb', border: '1px solid #44445a', borderRadius: '6px', cursor: 'pointer' })}>
+          <button onClick={onExit} style={c({ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.72rem', letterSpacing: '0.08em', textTransform: 'uppercase', padding: '12px 32px', background: 'transparent', color: '#6b5b8a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '10px', cursor: 'pointer' })}>
             Back to Course
           </button>
         </div>
+        <div style={c({ position: 'absolute', bottom: 0, left: '30%', right: '30%', height: '1px', background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent)' })} />
       </div>
     </div>
   );
@@ -576,36 +694,29 @@ export default function BattleDemo2Client() {
   const [selected,  setSelected]  = useState<'A'|'B'|'C'|'D'|null>(null);
   const [revealed,  setRevealed]  = useState(false);
   const [bossHit,   setBossHit]   = useState(false);
+  const [playerHit, setPlayerHit] = useState(false);
   const [timeLeft,  setTimeLeft]  = useState(ANSWER_TIMEOUT);
   const [correct,   setCorrect]   = useState(0);
   const [gameState, setGameState] = useState<'playing'|'victory'|'defeat'>('playing');
   const [floats,    setFloats]    = useState<{ id: number; text: string; good: boolean }[]>([]);
 
   const floatId  = useRef(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval>|null>(null);
+  const stateRef = useRef({ playerHp, bossHp, correct, qIndex });
+  useEffect(() => { stateRef.current = { playerHp, bossHp, correct, qIndex }; });
 
   const currentQ = questions[qIndex];
 
   const spawnFloat = (text: string, good: boolean) => {
     const id = floatId.current++;
     setFloats(f => [...f, { id, text, good }]);
-    setTimeout(() => setFloats(f => f.filter(x => x.id !== id)), 1400);
+    setTimeout(() => setFloats(f => f.filter(x => x.id !== id)), 1600);
   };
 
-  const advance = (nextIdx: number, pHp: number, bHp: number, corr: number) => {
-    if (nextIdx >= questions.length) {
-      setGameState(corr >= Math.ceil(questions.length * 0.6) ? 'victory' : 'defeat');
-      return;
-    }
-    setQIndex(nextIdx);
-    setSelected(null);
-    setRevealed(false);
-    setTimeLeft(ANSWER_TIMEOUT);
+  const advance = (nextIdx: number, corr: number) => {
+    if (nextIdx >= questions.length) { setGameState(corr >= Math.ceil(questions.length * 0.6) ? 'victory' : 'defeat'); return; }
+    setQIndex(nextIdx); setSelected(null); setRevealed(false); setTimeLeft(ANSWER_TIMEOUT);
   };
-
-  // Need stable ref for handleTimeout inside interval
-  const stateRef = useRef({ playerHp, bossHp, correct, qIndex, revealed, gameState });
-  useEffect(() => { stateRef.current = { playerHp, bossHp, correct, qIndex, revealed, gameState }; });
 
   useEffect(() => {
     if (gameState !== 'playing' || revealed) return;
@@ -613,13 +724,13 @@ export default function BattleDemo2Client() {
       setTimeLeft(t => {
         if (t <= 1) {
           clearInterval(timerRef.current!);
-          // timeout damage
-          const newHp = stateRef.current.playerHp - WRONG_DAMAGE;
-          setPlayerHp(newHp);
-          setRevealed(true);
+          const { playerHp: pH, correct: corr, qIndex: qi } = stateRef.current;
+          const nHp = pH - WRONG_DAMAGE;
+          setPlayerHp(nHp); setRevealed(true); setPlayerHit(true);
           spawnFloat(`-${WRONG_DAMAGE} HP`, false);
-          if (newHp <= 0) { setTimeout(() => setGameState('defeat'), 800); }
-          else { setTimeout(() => advance(stateRef.current.qIndex + 1, newHp, stateRef.current.bossHp, stateRef.current.correct), 1400); }
+          setTimeout(() => setPlayerHit(false), 600);
+          if (nHp <= 0) setTimeout(() => setGameState('defeat'), 800);
+          else setTimeout(() => advance(qi + 1, corr), 1500);
           return 0;
         }
         return t - 1;
@@ -631,40 +742,33 @@ export default function BattleDemo2Client() {
   const handleAnswer = (opt: 'A'|'B'|'C'|'D') => {
     if (revealed) return;
     clearInterval(timerRef.current!);
-    setSelected(opt);
-    setRevealed(true);
-    const isCorrect = opt === currentQ.correctAnswer;
-
-    if (isCorrect) {
-      const newBoss = bossHp - CORRECT_DAMAGE;
-      const newCorr = correct + 1;
-      setBossHp(newBoss);
-      setBossHit(true);
-      setCorrect(newCorr);
+    setSelected(opt); setRevealed(true);
+    if (opt === currentQ.correctAnswer) {
+      const nb = bossHp - CORRECT_DAMAGE, nc = correct + 1;
+      setBossHp(nb); setBossHit(true); setCorrect(nc);
       spawnFloat(`-${CORRECT_DAMAGE}`, true);
-      setTimeout(() => setBossHit(false), 500);
-      if (newBoss <= 0) { setTimeout(() => setGameState('victory'), 800); return; }
-      setTimeout(() => advance(qIndex + 1, playerHp, newBoss, newCorr), 1400);
+      setTimeout(() => setBossHit(false), 600);
+      if (nb <= 0) { setTimeout(() => setGameState('victory'), 900); return; }
+      setTimeout(() => advance(qIndex + 1, nc), 1500);
     } else {
-      const newHp = playerHp - WRONG_DAMAGE;
-      setPlayerHp(newHp);
+      const nh = playerHp - WRONG_DAMAGE;
+      setPlayerHp(nh); setPlayerHit(true);
       spawnFloat(`-${WRONG_DAMAGE} HP`, false);
-      if (newHp <= 0) { setTimeout(() => setGameState('defeat'), 800); return; }
-      setTimeout(() => advance(qIndex + 1, newHp, bossHp, correct), 1400);
+      setTimeout(() => setPlayerHit(false), 600);
+      if (nh <= 0) { setTimeout(() => setGameState('defeat'), 800); return; }
+      setTimeout(() => advance(qIndex + 1, correct), 1500);
     }
   };
 
   const handleRetry = () => {
-    setBossHp(maxBossHp); setPlayerHp(MAX_PLAYER_HP);
-    setQIndex(0); setSelected(null); setRevealed(false);
-    setTimeLeft(ANSWER_TIMEOUT); setCorrect(0);
-    setGameState('playing'); setFloats([]);
+    setBossHp(maxBossHp); setPlayerHp(MAX_PLAYER_HP); setQIndex(0);
+    setSelected(null); setRevealed(false); setTimeLeft(ANSWER_TIMEOUT);
+    setCorrect(0); setGameState('playing'); setFloats([]);
   };
 
   const score = Math.round((correct / questions.length) * 100);
   const OPTS  = ['A','B','C','D'] as const;
   const VALS  = [currentQ.optionA, currentQ.optionB, currentQ.optionC, currentQ.optionD];
-
   const getState = (o: 'A'|'B'|'C'|'D'): AnswerState => {
     if (!revealed) return selected === o ? 'selected' : 'idle';
     if (o === currentQ.correctAnswer) return 'correct';
@@ -675,85 +779,102 @@ export default function BattleDemo2Client() {
   return (
     <>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
-      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+      <style>{`
+        @keyframes urgentPulse { from{transform:scale(1)} to{transform:scale(1.15)} }
+        @keyframes hpShake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-4px)} 50%{transform:translateX(4px)} 70%{transform:translateX(-3px)} }
+        @keyframes qSlide { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes hGlow { 0%,100%{box-shadow:0 1px 0 rgba(168,85,247,0.2)} 50%{box-shadow:0 1px 0 rgba(168,85,247,0.5),0 0 30px rgba(168,85,247,0.08)} }
+        *{box-sizing:border-box;margin:0;padding:0}
+      `}</style>
 
-      <div style={ROOT}>
+      <div style={c({ position: 'fixed', inset: 0, background: '#04000a', display: 'flex', flexDirection: 'column', fontFamily: "'IBM Plex Mono', monospace", zIndex: 1000, overflow: 'hidden' })}>
+
         {/* 3-D CANVAS */}
-        <div style={CANVAS}>
-          <Canvas shadows camera={{ position: [0, 0.5, 5.5], fov: 48 }}
-            gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.2 }}>
+        <div style={c({ position: 'absolute', inset: 0, zIndex: 1 })}>
+          <Canvas shadows camera={{ position: [0, 1.2, 6.5], fov: 46 }}
+            gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.4 }}>
             <Suspense fallback={null}>
               <Scene hpPct={bossHp / maxBossHp} isHit={bossHit} isDead={gameState === 'victory'} floats={floats} />
             </Suspense>
           </Canvas>
         </div>
 
-        {/* HTML OVERLAY */}
-        <div style={OVERLAY}>
-          {/* Header */}
-          <header style={HEADER}>
-            <button style={EXIT_BTN} onClick={() => window.history.back()}>← Exit</button>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <span style={H_TITLE}>🐉 SLAY THE DRAGON</span>
-              <span style={H_SUB}>JavaScript &amp; The DOM</span>
+        {/* OVERLAY */}
+        <div style={c({ position: 'relative', zIndex: 2, display: 'flex', flexDirection: 'column', height: '100vh', pointerEvents: 'none' })}>
+
+          {/* ── HEADER ── */}
+          <header style={c({ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 28px', background: 'linear-gradient(180deg, rgba(4,0,10,0.97) 0%, rgba(15,5,30,0.92) 100%)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(168,85,247,0.2)', pointerEvents: 'auto', animation: 'hGlow 4s ease-in-out infinite' })}>
+            <button onClick={() => window.history.back()} style={c({ fontFamily: "'IBM Plex Mono', monospace", fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,255,255,0.04)', color: '#7c6a9a', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '6px', padding: '7px 16px', cursor: 'pointer' })}>← Exit</button>
+            <div style={c({ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px' })}>
+              <span style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 800, fontSize: '1rem', letterSpacing: '0.18em', textTransform: 'uppercase', background: 'linear-gradient(135deg, #e879f9, #a855f7, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', filter: 'drop-shadow(0 0 16px rgba(168,85,247,0.5))' })}>
+                🐉 Slay the Dragon
+              </span>
+              <span style={c({ fontSize: '0.58rem', color: '#5a4a7a', letterSpacing: '0.1em' })}>JavaScript &amp; The DOM</span>
             </div>
-            <div style={Q_COUNTER}>{qIndex + 1} / {questions.length}</div>
+            <div style={c({ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '5px' })}>
+              <span style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.78rem', color: '#7c6a9a' })}>
+                {qIndex + 1} <span style={{ color: '#3d2f5a' }}>/ {questions.length}</span>
+              </span>
+              <div style={c({ display: 'flex', gap: '4px' })}>
+                {questions.map((_, i) => (
+                  <div key={i} style={c({ width: '6px', height: '6px', borderRadius: '50%', background: i < qIndex ? '#7c3aed' : i === qIndex ? '#e879f9' : 'rgba(255,255,255,0.1)', boxShadow: i === qIndex ? '0 0 6px #e879f9' : 'none', transition: 'all 0.3s' })} />
+                ))}
+              </div>
+            </div>
           </header>
 
-          {/* Arena viewport space */}
-          <div style={ARENA} />
+          <div style={c({ flex: 1 })} />
 
-          {/* Bottom UI */}
-          <div style={BOTTOM}>
-            {/* HP + Timer row */}
-            <div style={HP_ROW}>
-              <div style={HP_BLOCK}>
-                <div style={{ ...HP_LABEL, color: '#22c55e' }}>
-                  <span>⚔ You</span><span>{Math.max(0, playerHp)} HP</span>
+          {/* ── BOTTOM HUD ── */}
+          <div style={c({ background: 'linear-gradient(0deg, rgba(4,0,10,0.98) 0%, rgba(10,3,20,0.95) 100%)', backdropFilter: 'blur(24px)', borderTop: '1px solid rgba(168,85,247,0.15)', padding: '18px 28px 22px', pointerEvents: 'auto' })}>
+
+            {/* HP + TIMER */}
+            <div style={c({ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center' })}>
+              <div style={c({ flex: 1 })}>
+                <div style={c({ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '7px' })}>
+                  <span style={c({ fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#22c55e', fontWeight: 500 })}>⚔ Hero</span>
+                  <span style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: (playerHp/MAX_PLAYER_HP) > 0.5 ? '#22c55e' : (playerHp/MAX_PLAYER_HP) > 0.25 ? '#f59e0b' : '#ef4444' })}>
+                    {Math.max(0, playerHp)}<span style={{ fontSize: '0.55rem', color: '#3d4a5a', marginLeft: '2px' }}>HP</span>
+                  </span>
                 </div>
-                <div style={HP_BAR}><HpFill pct={playerHp / MAX_PLAYER_HP} type="player" /></div>
+                <HpBar pct={playerHp / MAX_PLAYER_HP} type="player" shake={playerHit} />
               </div>
-              <div style={TIMER_BLK}>
-                <TimerSVG seconds={timeLeft} max={ANSWER_TIMEOUT} />
-              </div>
-              <div style={HP_BLOCK}>
-                <div style={{ ...HP_LABEL, color: '#d946ef' }}>
-                  <span>🐉 Dragon</span><span>{Math.max(0, bossHp)} HP</span>
+              <TimerRing seconds={timeLeft} max={ANSWER_TIMEOUT} />
+              <div style={c({ flex: 1 })}>
+                <div style={c({ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '7px' })}>
+                  <span style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: '0.9rem', color: (bossHp/maxBossHp) > 0.6 ? '#c026d3' : (bossHp/maxBossHp) > 0.3 ? '#ea580c' : '#dc2626' })}>
+                    {Math.max(0, bossHp)}<span style={{ fontSize: '0.55rem', color: '#4a2a5a', marginLeft: '2px' }}>HP</span>
+                  </span>
+                  <span style={c({ fontSize: '0.6rem', letterSpacing: '0.15em', textTransform: 'uppercase', color: '#c026d3', fontWeight: 500 })}>Dragon 🐉</span>
                 </div>
-                <div style={HP_BAR}><HpFill pct={bossHp / maxBossHp} type="boss" /></div>
+                <HpBar pct={bossHp / maxBossHp} type="boss" shake={bossHit} />
               </div>
             </div>
 
-            {/* Question */}
-            <div style={Q_BOX}>
-              <p style={Q_TEXT}>{currentQ.question}</p>
+            {/* QUESTION */}
+            <div style={c({ background: 'linear-gradient(135deg, rgba(20,8,35,0.95) 0%, rgba(15,5,28,0.95) 100%)', border: '1px solid rgba(168,85,247,0.2)', borderRadius: '12px', padding: '16px 20px', marginBottom: '12px', boxShadow: '0 0 30px rgba(168,85,247,0.06), inset 0 1px 0 rgba(255,255,255,0.04)', animation: 'qSlide 0.25s ease' })}>
+              <div style={c({ display: 'flex', alignItems: 'flex-start', gap: '12px' })}>
+                <div style={c({ width: '3px', flexShrink: 0, alignSelf: 'stretch', borderRadius: '2px', background: 'linear-gradient(180deg, #a855f7, #7c3aed)', marginTop: '2px' })} />
+                <p style={c({ fontFamily: "'Syne', sans-serif", fontWeight: 700, fontSize: 'clamp(0.88rem, 2vw, 1.05rem)', color: '#f0e8ff', lineHeight: 1.55 })}>
+                  {currentQ.question}
+                </p>
+              </div>
             </div>
 
-            {/* Options */}
-            <div style={OPTS_GRID}>
-              {OPTS.map((o, i) => {
-                const st = getState(o);
-                return (
-                  <button key={o} style={optionStyle(st)} onClick={() => handleAnswer(o)} disabled={revealed}>
-                    <span style={optionLetterStyle(st)}>{o}</span>
-                    <span style={{ flex: 1 }}>{VALS[i]}</span>
-                    {st === 'correct' && <span style={{ color: '#22c55e' }}>✓</span>}
-                    {st === 'wrong'   && <span style={{ color: '#ef4444' }}>✗</span>}
-                  </button>
-                );
-              })}
+            {/* OPTIONS */}
+            <div style={c({ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' })}>
+              {OPTS.map((o, i) => (
+                <OptionBtn key={o} letter={o} text={VALS[i]} state={getState(o)} onClick={() => handleAnswer(o)} disabled={revealed} />
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Result overlay */}
+        {/* RESULT */}
         {gameState !== 'playing' && (
-          <ResultScreen
-            type={gameState} score={score} isFinalBoss={isFinalBoss}
-            onRetry={handleRetry}
-            onContinue={() => console.log('victory — wire to router.push')}
-            onExit={() => window.history.back()}
-          />
+          <ResultScreen type={gameState} score={score} isFinalBoss={isFinalBoss}
+            onRetry={handleRetry} onContinue={() => console.log('wire to router.push')} onExit={() => window.history.back()} />
         )}
       </div>
     </>

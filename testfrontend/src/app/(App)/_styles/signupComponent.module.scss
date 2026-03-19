@@ -1,319 +1,333 @@
-// signupComponent.module.scss
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap');
 
-$primary-green: #00bf63;
-$blue: #5271ff;
-$yellow: #f9c80e;
-$black: #000000;
-$dark-green: #24570f;
-$light-green: #b9e185;
+// ── Tokens ────────────────────────────────────────────────────
+$white:         #ffffff;
+$snow:          #fafafa;
+$ice:           #f4f0ff;
+$frost:         #ede8ff;
+$ink:           #0f0720;
+$slate:         #3d2f5a;
+$muted:         #8a7aaa;
+$hint:          #c4b8e0;
+$violet:        #7c3aed;
+$violet-mid:    #9333ea;
+$violet-light:  #a855f7;
+$violet-pale:   #ddd6fe;
+$violet-ghost:  #ede9fe;
+$fuchsia:       #d946ef;
+$fuchsia-pale:  #fae8ff;
+$danger:        #f43f5e;
+$font-display:  'Syne', sans-serif;
+$font-body:     'Plus Jakarta Sans', sans-serif;
 
+// ── Page root ─────────────────────────────────────────────────
 .main {
-	min-height: 100vh;
-	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-	padding: 80px 0;
-	position: relative;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fce8ff 0%, #ede8ff 45%, #ddd6fe 100%);
+  display: flex;
+  flex-direction: column;
+  font-family: $font-body;
+  position: relative;
+  overflow: hidden;
 
-	&::before {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-image: url('/images/grid-pattern.svg');
-		opacity: 0.05;
-		pointer-events: none;
-	}
+  &::before {
+    content: '';
+    position: absolute;
+    width: 700px; height: 700px; border-radius: 50%;
+    background: radial-gradient(circle, rgba($fuchsia, 0.14) 0%, transparent 70%);
+    top: -280px; right: -200px; pointer-events: none;
+  }
+  &::after {
+    content: '';
+    position: absolute;
+    width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba($violet, 0.1) 0%, transparent 70%);
+    bottom: -150px; left: -150px; pointer-events: none;
+  }
 }
 
+// ── Container ─────────────────────────────────────────────────
 .mainContainer {
-	max-width: 520px;
-	margin: 0 auto;
-	margin-top: 50px;
-
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 16px 48px;
+  position: relative;
+  z-index: 1;
 }
 
+// ── Card ──────────────────────────────────────────────────────
 .box {
-	background: rgba(255, 255, 255, 0.95);
-	backdrop-filter: blur(10px);
-	border-radius: 20px;
-	padding: 40px;
-	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  background: $white;
+  border-radius: 28px;
+  padding: 48px 44px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 40px rgba($violet, 0.14), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba($violet, 0.06);
+  position: relative;
+
+  // Top gradient line
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 10%; right: 10%; height: 3px;
+    background: linear-gradient(90deg, $violet, $fuchsia);
+    border-radius: 2px 2px 0 0;
+  }
+
+  @media (max-width: 520px) {
+    padding: 36px 24px;
+    border-radius: 20px;
+    margin: 0 8px;
+  }
 }
 
-.primaryLabel {
-	font-size: 2.5rem;
-	font-weight: 700;
-	color: $black;
-	margin-bottom: 0.5rem;
-	text-align: center;
+// ── Logo ──────────────────────────────────────────────────────
+.logoMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 28px;
 
-	&::after {
-		content: '';
-		display: block;
-		width: 60px;
-		height: 4px;
-		background-color: $primary-green;
-		margin: 15px auto;
-		border-radius: 2px;
-	}
+  span {
+    font-family: $font-display;
+    font-weight: 800;
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, $violet, $fuchsia);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+// ── Labels ────────────────────────────────────────────────────
+.primaryLabel {
+  font-family: $font-display;
+  font-weight: 800;
+  font-size: 1.75rem;
+  color: $ink;
+  letter-spacing: -0.03em;
+  text-align: center;
+  margin-bottom: 6px;
 }
 
 .secondaryLabel {
-	text-align: center;
-	color: #666;
-	font-size: 1.1rem;
-	margin-bottom: 2rem;
-	display: block;
+  display: block;
+  font-size: 0.85rem;
+  color: $muted;
+  text-align: center;
+  margin-bottom: 32px;
+  line-height: 1.6;
 }
 
+// ── Error alert ────────────────────────────────────────────────
 .errorAlert {
-	background-color: #fff2f0;
-	border: 1px solid #ffccc7;
-	color: #ff4d4f;
-	padding: 12px 16px;
-	border-radius: 8px;
-	margin-bottom: 20px;
-	display: flex;
-	align-items: center;
-	gap: 10px;
-
-	svg {
-		flex-shrink: 0;
-	}
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba($danger, 0.06);
+  border: 1px solid rgba($danger, 0.2);
+  border-radius: 10px;
+  color: $danger;
+  font-size: 0.8rem;
+  margin-bottom: 20px;
 }
 
+// ── Secure badge ───────────────────────────────────────────────
 .secureSignupBadge {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 8px;
-	background-color: rgba($primary-green, 0.1);
-	color: $primary-green;
-	padding: 8px 16px;
-	border-radius: 20px;
-	font-size: 0.9rem;
-	font-weight: 500;
-	margin-bottom: 20px;
-
-	svg {
-		flex-shrink: 0;
-	}
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $violet;
+  background: $violet-ghost;
+  border: 1px solid $violet-pale;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-bottom: 24px;
 }
 
-.formGroup {
-	margin-bottom: 20px;
+// ── Form ──────────────────────────────────────────────────────
+.mainForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .formRow {
-	display: flex;
-	gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 0;
+}
 
-	.formGroup {
-		flex: 1;
-	}
+.formGroup {
+  margin-bottom: 14px;
 }
 
 .inputWrapper {
-	position: relative;
+  position: relative;
 
-	.inputIcon {
-		position: absolute;
-		left: 12px;
-		top: 50%;
-		transform: translateY(-50%);
-		color: #718096;
-		z-index: 1;
-	}
+  .inputIcon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: $hint;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+  }
 }
 
 .input {
-	background: #f8f9fa;
-	border: 1px solid #e2e8f0;
-	border-radius: 8px;
-	padding: 12px 15px 12px 40px;
-	width: 100%;
-	transition: all 0.3s ease;
+  width: 100%;
+  padding: 13px 16px 13px 42px;
+  font-family: $font-body;
+  font-size: 0.88rem;
+  color: $ink;
+  background: $snow;
+  border: 1.5px solid rgba($violet, 0.14);
+  border-radius: 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 
-	&:focus {
-		border-color: $primary-green;
-		box-shadow: 0 0 0 2px rgba($primary-green, 0.1);
-		outline: none;
-	}
+  &::placeholder { color: $hint; }
 
-	&.inputError {
-		border-color: #dc3545;
+  &:focus {
+    background: $white;
+    border-color: $violet;
+    box-shadow: 0 0 0 4px rgba($violet, 0.1);
+  }
 
-		&:focus {
-			box-shadow: 0 0 0 2px rgba(#dc3545, 0.1);
-		}
-	}
+  &.inputError {
+    border-color: $danger;
+    &:focus { box-shadow: 0 0 0 4px rgba($danger, 0.1); }
+  }
 }
 
 .errorMessage {
-	color: #dc3545;
-	font-size: 0.8rem;
-	margin-top: 5px;
-	margin-bottom: 0;
-	display: block;
+  font-size: 0.7rem;
+  color: $danger;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-// Role selection section
+// ── Role section ───────────────────────────────────────────────
 .roleSection {
-	margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .roleSectionLabel {
-	font-size: 0.9rem;
-	font-weight: 600;
-	color: #374151;
-	margin-bottom: 10px;
-	display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: $slate;
+  display: block;
+  margin-bottom: 10px;
+  letter-spacing: 0.01em;
 }
 
 .roleOptions {
-	display: flex;
-	gap: 10px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .roleCard {
-	flex: 1;
-	border: 2px solid #e2e8f0;
-	border-radius: 10px;
-	padding: 14px 12px;
-	cursor: pointer;
-	transition: all 0.25s ease;
-	background: #f8f9fa;
-	text-align: center;
-	position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 16px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 2px solid rgba($violet, 0.12);
+  background: $snow;
+  transition: all 0.2s;
+  text-align: center;
 
-	&:hover {
-		border-color: rgba($primary-green, 0.4);
-		background: rgba($primary-green, 0.03);
-	}
+  input[type="radio"] { display: none; }
 
-	&.roleCardActive {
-		border-color: $primary-green;
-		background: rgba($primary-green, 0.06);
-		box-shadow: 0 2px 8px rgba($primary-green, 0.15);
-	}
+  .roleIcon  { font-size: 1.8rem; }
+  .roleTitle { font-family: $font-display; font-weight: 700; font-size: 0.85rem; color: $ink; }
+  .roleDesc  { font-size: 0.7rem; color: $muted; }
 
-	// hide the native checkbox visually
-	input[type='radio'] {
-		position: absolute;
-		opacity: 0;
-		width: 0;
-		height: 0;
-	}
-
-	.roleIcon {
-		font-size: 1.4rem;
-		display: block;
-		margin-bottom: 4px;
-	}
-
-	.roleTitle {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: #374151;
-		display: block;
-	}
-
-	.roleDesc {
-		font-size: 0.72rem;
-		color: #718096;
-		display: block;
-		margin-top: 2px;
-	}
+  &:hover {
+    border-color: $violet-pale;
+    background: $violet-ghost;
+  }
 }
 
+.roleCardActive {
+  @extend .roleCard;
+  border-color: $violet !important;
+  background: $violet-ghost !important;
+  box-shadow: 0 0 0 4px rgba($violet, 0.1) !important;
+
+  .roleTitle { color: $violet !important; }
+}
+
+// ── Submit ─────────────────────────────────────────────────────
 .signupButton {
-	width: 100%;
-	background-color: $primary-green;
-	border: none;
-	padding: 12px;
-	border-radius: 8px;
-	font-weight: 600;
-	color: white;
-	font-size: 1rem;
-	transition: all 0.3s ease;
-	margin-top: 4px;
+  width: 100%;
+  padding: 14px;
+  font-family: $font-body;
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, $violet, $fuchsia);
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba($violet, 0.3);
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 8px;
 
-	&:hover {
-		background-color: darken($primary-green, 8%);
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba($primary-green, 0.2);
-	}
-
-	&:disabled {
-		background-color: lighten($primary-green, 20%);
-		transform: none;
-		cursor: not-allowed;
-		box-shadow: none;
-	}
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }
 
+// ── Divider ────────────────────────────────────────────────────
 .divider {
-	text-align: center;
-	margin: 20px 0;
-	position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: $hint;
+  font-size: 0.78rem;
 
-	&::before,
-	&::after {
-		content: '';
-		position: absolute;
-		top: 50%;
-		width: calc(50% - 30px);
-		height: 1px;
-		background-color: #e2e8f0;
-	}
-
-	&::before {
-		left: 0;
-	}
-
-	&::after {
-		right: 0;
-	}
-
-	span {
-		background-color: white;
-		padding: 0 15px;
-		color: #718096;
-		font-size: 0.9rem;
-		position: relative;
-		z-index: 1;
-	}
+  &::before, &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba($violet, 0.1);
+  }
 }
 
+// ── Footer link ────────────────────────────────────────────────
 .signinLink {
-	text-align: center;
-	margin-top: 15px;
-	color: #666;
-	font-size: 0.95rem;
+  text-align: center;
+  font-size: 0.82rem;
+  color: $muted;
+  cursor: pointer;
+  margin: 0;
 
-	span {
-		color: $primary-green;
-		font-weight: 500;
-		cursor: pointer;
-
-		&:hover {
-			text-decoration: underline;
-		}
-	}
-}
-
-@media (max-width: 768px) {
-	.box {
-		padding: 30px 20px;
-	}
-
-	.primaryLabel {
-		font-size: 2rem;
-	}
-
-	.formRow {
-		flex-direction: column;
-		gap: 0;
-	}
+  span {
+    color: $violet;
+    font-weight: 600;
+    &:hover { text-decoration: underline; }
+  }
 }

@@ -137,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			// navigate based on role:
 			// Navigate based on role
 			if (userData.role === 'lecturer' || userData.role === 'instructor') {
-				router.push('/dasboard');
+				router.push('/dashboard');
 			} else {
 				router.push('/dashboard');
 			}

@@ -40,7 +40,7 @@ export default function ModernNavbar() {
 		>
 			<Container>
 				<Navbar.Brand href="/home" className={styles.logoText}>
-					IvyBrilliance
+					Macbase-SlayTheDragon
 				</Navbar.Brand>
 
 				<div className={styles.mobileToggle}>
