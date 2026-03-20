@@ -1,0 +1,248 @@
+// courseCardComponent.module.scss
+
+$green: #00bf63;
+$green-dark: #009e52;
+$text-dark: #111;
+$text-mid: #555;
+$text-light: #999;
+$border: #eaeaea;
+$bg: #f8f9fa;
+
+.courseCardLink {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+	height: 100%;
+}
+
+.courseCard {
+	background: #fff;
+	border-radius: 14px;
+	overflow: hidden;
+	border: 1px solid $border;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	transition: transform 0.22s ease, box-shadow 0.22s ease;
+
+	&:hover {
+		transform: translateY(-5px);
+		box-shadow: 0 12px 36px rgba(0, 0, 0, 0.1);
+	}
+}
+
+// ── Image ──────────────────────────────────────────────────────
+.imageContainer {
+	position: relative;
+	aspect-ratio: 16/9;
+	overflow: hidden;
+	background: #e9ecef;
+}
+
+.courseImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform 0.4s ease;
+
+	.courseCard:hover & {
+		transform: scale(1.04);
+	}
+}
+
+.placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #ccc;
+	background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+}
+
+.badge {
+	position: absolute;
+	top: 12px;
+	right: 12px;
+}
+
+.freeBadge,
+.paidBadge {
+	font-size: 0.72rem;
+	font-weight: 700;
+	padding: 4px 10px;
+	border-radius: 20px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.freeBadge {
+	background: $green;
+	color: #fff;
+}
+
+.paidBadge {
+	background: #111;
+	color: #fff;
+}
+
+// ── Content ────────────────────────────────────────────────────
+.content {
+	padding: 18px 20px 20px;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	gap: 10px;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.levelBadge {
+	font-size: 0.68rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	padding: 3px 9px;
+	border-radius: 20px;
+	background: #e9ecef;
+	color: $text-mid;
+
+	&.beginner { background: #e6f9f0; color: $green-dark; }
+	&.intermediate { background: #fff3cd; color: #856404; }
+	&.advanced { background: #ffe4e4; color: #c0392b; }
+}
+
+.language {
+	font-size: 0.75rem;
+	color: $text-light;
+	margin-left: auto;
+}
+
+.title {
+	font-size: 1rem;
+	font-weight: 700;
+	color: $text-dark;
+	line-height: 1.35;
+	margin: 0;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+
+.description {
+	font-size: 0.83rem;
+	color: $text-mid;
+	line-height: 1.55;
+	margin: 0;
+}
+
+// ── Instructor ─────────────────────────────────────────────────
+.instructorInfo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.avatarStack {
+	display: flex;
+	flex-direction: row;
+}
+
+.avatarCircle {
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	border: 2px solid #fff;
+	overflow: hidden;
+	background: #ddd;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	color: $text-light;
+	flex-shrink: 0;
+
+	// Stack overlap
+	& + & { margin-left: -8px; }
+
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+}
+
+.extraCount {
+	background: $green;
+	color: #fff;
+	font-size: 0.62rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.instructorName {
+	font-size: 0.82rem;
+	color: $text-mid;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 160px;
+}
+
+// ── Meta ───────────────────────────────────────────────────────
+.meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+
+.metaItem {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	font-size: 0.78rem;
+	color: $text-light;
+
+	svg { color: $green; }
+}
+
+// ── Tags ───────────────────────────────────────────────────────
+.tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.tag {
+	font-size: 0.7rem;
+	background: $bg;
+	border: 1px solid $border;
+	color: $text-mid;
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+// ── Footer ─────────────────────────────────────────────────────
+.footer {
+	margin-top: auto;
+	padding-top: 10px;
+	border-top: 1px solid $border;
+	display: flex;
+	align-items: center;
+}
+
+.enrolled {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 0.78rem;
+	color: $text-light;
+
+	svg { color: $green; }
+}

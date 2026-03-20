@@ -1,0 +1,614 @@
+// =======================================
+// PINK / PURPLE THEME — Tutor Landing
+// =======================================
+
+$primary-purple: #7c3aed;
+$soft-purple: #a78bfa;
+$pink: #ec4899;
+$hot-pink: #db2777;
+$dark-purple: #3b0764;
+$gray-light: #f8f7ff;
+$gray-medium: #e9e6ff;
+$gray-dark: #6b7280;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+
+$gradient: linear-gradient(135deg, $primary-purple, $hot-pink);
+$gradient-soft: linear-gradient(135deg, rgba($primary-purple, 0.12), rgba($hot-pink, 0.08));
+
+// ─── Wrapper ────────────────────────────────────────────────────────────────
+.wrapper {
+	position: relative;
+	min-height: 100vh;
+	background-color: #0d0516;
+	color: $text-light;
+	overflow: hidden;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+}
+
+// ─── Decorative Blobs ───────────────────────────────────────────────────────
+%blob-base {
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(120px);
+	pointer-events: none;
+	z-index: 0;
+}
+
+.blob1 {
+	@extend %blob-base;
+	width: 700px;
+	height: 700px;
+	background: radial-gradient(circle, rgba($primary-purple, 0.35), transparent 70%);
+	top: -200px;
+	left: -200px;
+}
+
+.blob2 {
+	@extend %blob-base;
+	width: 500px;
+	height: 500px;
+	background: radial-gradient(circle, rgba($pink, 0.3), transparent 70%);
+	top: 200px;
+	right: -150px;
+}
+
+.blob3 {
+	@extend %blob-base;
+	width: 400px;
+	height: 400px;
+	background: radial-gradient(circle, rgba($hot-pink, 0.2), transparent 70%);
+	bottom: 100px;
+	left: 30%;
+}
+
+// ─── Nav ────────────────────────────────────────────────────────────────────
+.nav {
+	position: relative;
+	z-index: 10;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 1.5rem 3rem;
+	border-bottom: 1px solid rgba($soft-purple, 0.15);
+	backdrop-filter: blur(8px);
+}
+
+.logo {
+	font-size: 1.4rem;
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	color: $text-light;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+
+	span {
+		background: $gradient;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+}
+
+.navBadge {
+	font-size: 0.72rem;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	color: $soft-purple;
+	border: 1px solid rgba($soft-purple, 0.4);
+	padding: 0.3rem 0.8rem;
+	border-radius: 999px;
+}
+
+// ─── Hero ───────────────────────────────────────────────────────────────────
+.hero {
+	position: relative;
+	z-index: 5;
+	max-width: 1000px;
+	margin: 0 auto;
+	padding: 6rem 2rem 3rem;
+	text-align: center;
+}
+
+.heroInner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.5rem;
+}
+
+.eyebrow {
+	font-size: 0.75rem;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: $soft-purple;
+	opacity: 0.85;
+}
+
+.headline {
+	font-size: clamp(2.4rem, 6vw, 4.2rem);
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.03em;
+	margin: 0;
+}
+
+.gradientText {
+	background: $gradient;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.subheadline {
+	font-size: 1.05rem;
+	color: rgba($text-light, 0.72);
+	max-width: 580px;
+	line-height: 1.7;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+
+	strong {
+		color: $soft-purple;
+		font-weight: 600;
+	}
+}
+
+// ─── Form ───────────────────────────────────────────────────────────────────
+.form {
+	width: 100%;
+	max-width: 540px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.inputRow {
+	display: flex;
+	width: 100%;
+	border-radius: 14px;
+	overflow: hidden;
+	border: 1.5px solid rgba($soft-purple, 0.4);
+	background: rgba($text-light, 0.04);
+	backdrop-filter: blur(10px);
+	transition: border-color 0.2s;
+
+	&:focus-within {
+		border-color: $soft-purple;
+		box-shadow: 0 0 0 3px rgba($primary-purple, 0.2);
+	}
+}
+
+.emailInput {
+	flex: 1;
+	background: transparent;
+	border: none;
+	outline: none;
+	padding: 1rem 1.2rem;
+	font-size: 0.95rem;
+	color: $text-light;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+
+	&::placeholder {
+		color: rgba($text-light, 0.3);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+	}
+}
+
+.submitBtn {
+	background: $gradient;
+	border: none;
+	padding: 1rem 1.6rem;
+	font-size: 0.85rem;
+	font-weight: 700;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.05em;
+	color: $text-light;
+	cursor: pointer;
+	white-space: nowrap;
+	transition: opacity 0.2s, transform 0.15s;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+
+	&:hover:not(:disabled) {
+		opacity: 0.9;
+		transform: scale(1.02);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.7;
+	}
+}
+
+.spinner {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	border: 2px solid rgba($text-light, 0.3);
+	border-top-color: $text-light;
+	border-radius: 50%;
+	animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+	to { transform: rotate(360deg); }
+}
+
+.formNote {
+	font-size: 0.72rem;
+	color: rgba($text-light, 0.35);
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.05em;
+}
+
+.errorMsg {
+	font-size: 0.8rem;
+	color: $pink;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+}
+
+// ─── Success Card ───────────────────────────────────────────────────────────
+.successCard {
+	background: rgba($primary-purple, 0.15);
+	border: 1px solid rgba($soft-purple, 0.35);
+	border-radius: 20px;
+	padding: 2rem 2.5rem;
+	text-align: center;
+	backdrop-filter: blur(12px);
+	animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+	h3 {
+		font-size: 1.4rem;
+		margin: 0.5rem 0;
+		background: $gradient;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	p {
+		color: rgba($text-light, 0.7);
+		font-size: 0.9rem;
+
+		strong {
+			color: $soft-purple;
+		}
+	}
+}
+
+.successIcon {
+	width: 52px;
+	height: 52px;
+	background: $gradient;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.4rem;
+	margin: 0 auto 0.8rem;
+}
+
+@keyframes popIn {
+	from { opacity: 0; transform: scale(0.85); }
+	to   { opacity: 1; transform: scale(1); }
+}
+
+// ─── Stats Row ──────────────────────────────────────────────────────────────
+.statsRow {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	flex-wrap: wrap;
+	margin-top: 3rem;
+}
+
+.statChip {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.2rem;
+	background: rgba($text-light, 0.04);
+	border: 1px solid rgba($soft-purple, 0.2);
+	border-radius: 14px;
+	padding: 1rem 1.6rem;
+	backdrop-filter: blur(8px);
+	transition: border-color 0.2s, transform 0.2s;
+
+	&:hover {
+		border-color: rgba($soft-purple, 0.5);
+		transform: translateY(-3px);
+	}
+}
+
+.statNum {
+	font-size: 1.5rem;
+	font-weight: 700;
+	background: $gradient;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+}
+
+.statLabel {
+	font-size: 0.7rem;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: rgba($text-light, 0.45);
+}
+
+// ─── Perks Section ──────────────────────────────────────────────────────────
+.perksSection {
+	position: relative;
+	z-index: 5;
+	max-width: 1000px;
+	margin: 5rem auto;
+	padding: 0 2rem;
+	text-align: center;
+}
+
+.sectionLabel {
+	font-size: 0.72rem;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: $pink;
+	margin-bottom: 0.8rem;
+}
+
+.sectionTitle {
+	font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+	font-weight: 700;
+	margin-bottom: 3rem;
+	letter-spacing: -0.02em;
+}
+
+.perksGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 1.5rem;
+}
+
+.perkCard {
+	background: rgba($text-light, 0.03);
+	border: 1px solid rgba($soft-purple, 0.18);
+	border-radius: 20px;
+	padding: 2rem 1.5rem;
+	text-align: left;
+	backdrop-filter: blur(8px);
+	transition: border-color 0.25s, transform 0.25s, background 0.25s;
+
+	&:hover {
+		border-color: rgba($pink, 0.5);
+		background: rgba($primary-purple, 0.08);
+		transform: translateY(-5px);
+	}
+}
+
+.perkIcon {
+	font-size: 1.6rem;
+	background: $gradient;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	margin-bottom: 1rem;
+	display: block;
+}
+
+.perkTitle {
+	font-size: 1rem;
+	font-weight: 700;
+	margin-bottom: 0.5rem;
+	letter-spacing: -0.01em;
+}
+
+.perkDesc {
+	font-size: 0.85rem;
+	color: rgba($text-light, 0.55);
+	line-height: 1.6;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	margin: 0;
+}
+
+// ─── CTA Band ───────────────────────────────────────────────────────────────
+.ctaBand {
+	position: relative;
+	z-index: 5;
+	margin: 4rem 2rem;
+	padding: 3rem 3rem;
+	border-radius: 24px;
+	background: $gradient;
+	max-width: 860px;
+	margin-left: auto;
+	margin-right: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");
+	}
+}
+
+.ctaInner {
+	position: relative;
+	z-index: 2;
+
+	h2 {
+		font-size: 1.8rem;
+		font-weight: 700;
+		margin: 0 0 0.4rem;
+		letter-spacing: -0.02em;
+	}
+
+	p {
+		margin: 0;
+		font-size: 0.9rem;
+		opacity: 0.85;
+		font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	}
+}
+
+.ctaDeco {
+	position: relative;
+	z-index: 2;
+	font-size: 4rem;
+	opacity: 0.25;
+	line-height: 1;
+}
+
+// ─── Footer ─────────────────────────────────────────────────────────────────
+.footer {
+	position: relative;
+	z-index: 5;
+	display: flex;
+	justify-content: space-between;
+	padding: 1.5rem 3rem;
+	border-top: 1px solid rgba($soft-purple, 0.12);
+	font-size: 0.72rem;
+	font-family:
+		'Inter',
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		Oxygen,
+		Ubuntu,
+		Cantarell,
+		sans-serif;
+	color: rgba($text-light, 0.3);
+	letter-spacing: 0.06em;
+}
+
+// ─── Responsive ─────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+	.nav { padding: 1rem 1.2rem; }
+	.hero { padding: 4rem 1.2rem 2rem; }
+	.inputRow { flex-direction: column; border-radius: 14px; }
+	.submitBtn { width: 100%; justify-content: center; border-radius: 0 0 12px 12px; }
+	.emailInput { border-radius: 12px 12px 0 0; }
+	.ctaBand { flex-direction: column; gap: 1rem; text-align: center; }
+	.footer { flex-direction: column; gap: 0.4rem; align-items: center; }
+}

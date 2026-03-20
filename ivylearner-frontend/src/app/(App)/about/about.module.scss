@@ -1,0 +1,278 @@
+// about.module.scss
+$primary-green: #00bf63;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-muted: #718096;
+$gray-light: #f5f7fa;
+$border: #e2e8f0;
+
+.wrapper {
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+// ── Hero ────────────────────────────────────────────
+.hero {
+	background: linear-gradient(135deg, #0a0a0a 0%, #1a2332 60%, #24570f 100%);
+	color: #fff;
+	padding: 90px 0 70px;
+	position: relative;
+	overflow: hidden;
+
+	&::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: radial-gradient(ellipse 60% 60% at 80% 50%, rgba(0, 191, 99, 0.12) 0%, transparent 70%);
+		pointer-events: none;
+	}
+
+	h1 {
+		font-size: clamp(2.2rem, 5vw, 3.6rem);
+		font-weight: 800;
+		line-height: 1.1;
+		margin-bottom: 16px;
+
+		span { color: $primary-green; }
+	}
+
+	p {
+		color: rgba(255, 255, 255, 0.65);
+		font-size: 1.05rem;
+		max-width: 540px;
+	}
+}
+
+.badge {
+	display: inline-block;
+	background: rgba(0, 191, 99, 0.15);
+	border: 1px solid rgba(0, 191, 99, 0.3);
+	color: $primary-green;
+	border-radius: 40px;
+	padding: 6px 18px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	margin-bottom: 20px;
+	display: inline-block;
+}
+
+// ── Sections ────────────────────────────────────────
+.section {
+	padding: 80px 0;
+}
+
+.altBg {
+	background: $gray-light;
+}
+
+.sectionLabel {
+	color: $primary-green;
+	font-size: 0.78rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.divider {
+	width: 48px;
+	height: 4px;
+	background: linear-gradient(90deg, $primary-green, $light-green);
+	border-radius: 4px;
+	margin-bottom: 28px;
+
+	&.centered {
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
+.sectionTitle {
+	font-size: clamp(1.6rem, 3vw, 2.2rem);
+	font-weight: 800;
+	color: $text-dark;
+	margin-bottom: 16px;
+}
+
+.body {
+	color: $text-muted;
+	line-height: 1.8;
+	margin-bottom: 16px;
+}
+
+.centeredHeader {
+	text-align: center;
+	margin-bottom: 48px;
+}
+
+// ── Stats ────────────────────────────────────────────
+.statCard {
+	text-align: center;
+	padding: 32px 20px;
+	background: #fff;
+	border-radius: 16px;
+	border: 1px solid $border;
+	transition: all 0.3s ease;
+
+	&:hover {
+		transform: translateY(-6px);
+		box-shadow: 0 16px 40px rgba(0, 191, 99, 0.1);
+		border-color: $primary-green;
+	}
+}
+
+.statNumber {
+	font-size: 2.6rem;
+	font-weight: 800;
+	background: linear-gradient(135deg, $primary-green, $dark-green);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	line-height: 1;
+	margin-bottom: 8px;
+}
+
+.statLabel {
+	font-size: 0.88rem;
+	color: $text-muted;
+	font-weight: 500;
+}
+
+// ── Values ───────────────────────────────────────────
+.valuePill {
+	display: flex;
+	gap: 20px;
+	align-items: flex-start;
+	padding: 24px;
+	background: #fff;
+	border-radius: 14px;
+	border: 1px solid $border;
+	margin-bottom: 16px;
+	transition: all 0.25s ease;
+
+	&:hover {
+		border-color: $primary-green;
+		box-shadow: 0 8px 24px rgba(0, 191, 99, 0.08);
+	}
+
+	h5 {
+		font-size: 1rem;
+		font-weight: 700;
+		margin-bottom: 6px;
+		color: $text-dark;
+	}
+
+	p {
+		font-size: 0.88rem;
+		color: $text-muted;
+		line-height: 1.6;
+		margin: 0;
+	}
+}
+
+.valueIcon {
+	width: 48px;
+	height: 48px;
+	background: linear-gradient(135deg, $primary-green, $dark-green);
+	border-radius: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 1.3rem;
+	flex-shrink: 0;
+}
+
+// ── Team ─────────────────────────────────────────────
+.teamCard {
+	background: #fff;
+	border-radius: 16px;
+	border: 1px solid $border;
+	overflow: hidden;
+	transition: all 0.3s ease;
+
+	&:hover {
+		transform: translateY(-6px);
+		box-shadow: 0 16px 40px rgba(0, 0, 0, 0.1);
+	}
+}
+
+.teamAvatar {
+	height: 160px;
+	background: linear-gradient(135deg, red, purple);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3rem;
+}
+
+.teamBody {
+	padding: 22px 24px;
+
+	h4 {
+		font-size: 1.05rem;
+		font-weight: 700;
+		margin-bottom: 4px;
+		color: $text-dark;
+	}
+
+	p {
+		font-size: 0.88rem;
+		color: $text-muted;
+		line-height: 1.6;
+		margin: 0;
+	}
+}
+
+.teamRole {
+	color: $primary-green;
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	margin-bottom: 10px;
+}
+
+// ── CTA ──────────────────────────────────────────────
+.ctaBanner {
+	background: linear-gradient(135deg, $primary-green, $dark-green);
+	border-radius: 20px;
+	padding: 60px 48px;
+	text-align: center;
+	color: #fff;
+
+	h2 {
+		font-size: 2rem;
+		font-weight: 800;
+		margin-bottom: 12px;
+	}
+
+	p {
+		opacity: 0.85;
+		margin-bottom: 28px;
+	}
+}
+
+.ctaBtn {
+	display: inline-block;
+	background: #fff;
+	color: $dark-green;
+	border-radius: 10px;
+	padding: 14px 32px;
+	font-weight: 700;
+	font-size: 0.95rem;
+	text-decoration: none;
+	transition: all 0.3s ease;
+
+	&:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+		color: $dark-green;
+	}
+}
+
+@media (max-width: 768px) {
+	.hero { padding: 60px 0 50px; }
+	.ctaBanner { padding: 40px 24px; }
+}

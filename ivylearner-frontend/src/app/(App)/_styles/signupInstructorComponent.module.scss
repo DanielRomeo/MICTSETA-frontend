@@ -1,0 +1,181 @@
+// signupTutorComponent.module.scss
+
+// Import the variables from homeComponent.module.scss
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$black: #000000;
+$dark-green: #24570f;
+$light-green: #b9e185;
+
+.main {
+	min-height: 100vh;
+	background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+	padding: 80px 0;
+	position: relative;
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-image: url('/images/grid-pattern.svg');
+		opacity: 0.05;
+		pointer-events: none;
+	}
+}
+
+.mainContainer {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.box {
+	background: rgba(255, 255, 255, 0.95);
+	backdrop-filter: blur(10px);
+	border-radius: 20px;
+	padding: 40px;
+	box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+}
+
+.primaryLabel {
+	font-size: 2.5rem;
+	font-weight: 700;
+	color: $black;
+	margin-bottom: 0.5rem;
+	text-align: center;
+
+	&::after {
+		content: '';
+		display: block;
+		width: 60px;
+		height: 4px;
+		background-color: $primary-green;
+		margin: 15px auto;
+		border-radius: 2px;
+	}
+}
+
+.secondaryLabel {
+	text-align: center;
+	color: #666;
+	font-size: 1.1rem;
+	margin-bottom: 2rem;
+	display: block;
+}
+
+.benefitsSection {
+	display: flex;
+	justify-content: center;
+	gap: 30px;
+	margin-bottom: 2rem;
+	padding: 20px;
+	background: rgba(0, 191, 99, 0.05);
+	border-radius: 12px;
+
+	.benefitItem {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+
+		.benefitIcon {
+			color: $primary-green;
+			width: 24px;
+			height: 24px;
+		}
+
+		span {
+			font-size: 0.9rem;
+			color: #444;
+			font-weight: 500;
+		}
+	}
+}
+
+.mainForm {
+	.formGrid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 15px;
+		margin-bottom: 15px;
+	}
+}
+
+.input {
+	background: #f8f9fa;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 12px 15px;
+	margin-bottom: 15px;
+	transition: all 0.3s ease;
+
+	&:focus {
+		border-color: $primary-green;
+		box-shadow: 0 0 0 2px rgba($primary-green, 0.1);
+	}
+}
+
+.errorMessage {
+	color: #dc3545;
+	font-size: 0.8rem;
+	margin-bottom: 5px;
+	display: block;
+}
+
+.loginButton {
+	width: 100%;
+	background-color: $primary-green;
+	border: none;
+	padding: 12px;
+	border-radius: 8px;
+	font-weight: 600;
+	margin-top: 10px;
+	transition: all 0.3s ease;
+
+	&:hover {
+		background-color: darken($primary-green, 8%);
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba($primary-green, 0.2);
+	}
+}
+
+.createAccountLink {
+	text-align: center;
+	margin-top: 20px;
+	color: #666;
+
+	span {
+		color: $primary-green;
+		font-weight: 500;
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+}
+
+@media (max-width: 768px) {
+	.box {
+		padding: 30px 20px;
+	}
+
+	.formGrid {
+		grid-template-columns: 1fr !important;
+	}
+
+	.benefitsSection {
+		flex-direction: column;
+		gap: 15px;
+
+		.benefitItem {
+			justify-content: center;
+		}
+	}
+
+	.primaryLabel {
+		font-size: 2rem;
+	}
+}

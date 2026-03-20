@@ -1,0 +1,314 @@
+// MyCourses.module.scss - Using your home page colors
+
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$black: #000000;
+$dark-green: #24570f;
+$light-green: #b9e185;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-light: #f5f7fa;
+$gray-medium: #e2e8f0;
+$gray-dark: #718096;
+
+.myCoursesPage {
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		margin-bottom: 3rem;
+		flex-wrap: wrap;
+		gap: 1.5rem;
+
+		h1 {
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: $text-dark;
+			margin-bottom: 0.5rem;
+			position: relative;
+
+			&::after {
+				content: '';
+				position: absolute;
+				bottom: -8px;
+				left: 0;
+				width: 80px;
+				height: 4px;
+				background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+				border-radius: 2px;
+			}
+		}
+
+		p {
+			font-size: 1.1rem;
+			color: $gray-dark;
+			margin: 0;
+		}
+
+		.filterButtons {
+			display: flex;
+			gap: 0.75rem;
+			background: white;
+			padding: 0.5rem;
+			border-radius: 12px;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+			button {
+				padding: 0.75rem 1.5rem;
+				border: none;
+				background: none;
+				color: $gray-dark;
+				font-weight: 600;
+				border-radius: 8px;
+				cursor: pointer;
+				transition: all 0.3s ease;
+				font-size: 0.95rem;
+
+				&:hover {
+					background: rgba($primary-green, 0.1);
+					color: $primary-green;
+				}
+
+				&.active {
+					background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+					color: white;
+					box-shadow: 0 4px 12px rgba(0, 191, 99, 0.3);
+				}
+			}
+		}
+	}
+
+	.loading {
+		text-align: center;
+		padding: 4rem 0;
+		font-size: 1.2rem;
+		color: $gray-dark;
+	}
+}
+
+.courseCard {
+	border: none;
+	border-radius: 16px;
+	overflow: hidden;
+	transition: all 0.3s ease;
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+
+	&:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+	}
+
+	.courseImage {
+		position: relative;
+		height: 200px;
+		overflow: hidden;
+		background: linear-gradient(135deg, $gray-medium 0%, $gray-light 100%);
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			transition: transform 0.5s ease;
+		}
+
+		.statusBadge {
+			position: absolute;
+			top: 1rem;
+			right: 1rem;
+			z-index: 2;
+		}
+	}
+
+	&:hover .courseImage img {
+		transform: scale(1.1);
+	}
+
+	:global(.card-body) {
+		padding: 1.75rem;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	.courseTitle {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: $text-dark;
+		margin-bottom: 1rem;
+		line-height: 1.4;
+	}
+
+	.courseStats {
+		display: flex;
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid $gray-medium;
+
+		span {
+			display: flex;
+			align-items: center;
+			gap: 0.5rem;
+			color: $gray-dark;
+			font-size: 0.9rem;
+
+			svg {
+				color: $primary-green;
+			}
+		}
+	}
+
+	.progressSection {
+		margin-bottom: 1.5rem;
+
+		.progressHeader {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 0.75rem;
+			font-size: 0.95rem;
+
+			span:first-child {
+				color: $gray-dark;
+				font-weight: 500;
+			}
+
+			.progressPercent {
+				font-weight: 700;
+				color: $primary-green;
+				font-size: 1rem;
+			}
+		}
+
+		.progressBar {
+			height: 10px;
+			border-radius: 5px;
+			background-color: $gray-medium;
+			overflow: hidden;
+
+			:global(.progress-bar) {
+				background: linear-gradient(90deg, $primary-green 0%, $dark-green 100%);
+				transition: width 0.6s ease;
+			}
+		}
+	}
+
+	.actions {
+		margin-top: auto;
+		display: flex;
+		gap: 0.75rem;
+		flex-direction: column;
+
+		button {
+			width: 100%;
+			padding: 0.875rem;
+			border-radius: 8px;
+			font-weight: 600;
+			font-size: 0.95rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 0.5rem;
+			transition: all 0.3s ease;
+			border: none;
+		}
+
+		.continueBtn {
+			background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+			color: white;
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
+			}
+		}
+
+		.certificateBtn {
+			background: linear-gradient(135deg, $blue 0%, lighten($blue, 10%) 100%);
+			color: white;
+
+			&:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 8px 20px rgba($blue, 0.3);
+			}
+		}
+
+		.reviewBtn {
+			border: 2px solid $primary-green;
+			color: $primary-green;
+			background: white;
+
+			&:hover {
+				background: $primary-green;
+				color: white;
+				transform: translateY(-2px);
+			}
+		}
+	}
+}
+
+.emptyState {
+	border: 2px dashed $gray-medium;
+	border-radius: 16px;
+	background: white;
+
+	h3 {
+		color: $text-dark;
+		font-weight: 700;
+		margin-bottom: 0.75rem;
+	}
+
+	p {
+		color: $gray-dark;
+		margin-bottom: 2rem;
+	}
+
+	.browseBtn {
+		background: linear-gradient(135deg, $primary-green 0%, $dark-green 100%);
+		color: white;
+		border: none;
+		padding: 0.875rem 2.5rem;
+		border-radius: 8px;
+		font-weight: 600;
+		transition: all 0.3s ease;
+
+		&:hover {
+			transform: translateY(-3px);
+			box-shadow: 0 8px 20px rgba(0, 191, 99, 0.3);
+		}
+	}
+}
+
+// Responsive
+@media (max-width: 768px) {
+	.myCoursesPage {
+		.header {
+			h1 {
+				font-size: 2rem;
+			}
+
+			.filterButtons {
+				width: 100%;
+				flex-direction: column;
+
+				button {
+					text-align: left;
+				}
+			}
+		}
+	}
+
+	.courseCard {
+		.actions {
+			flex-direction: row;
+
+			button {
+				flex: 1;
+			}
+		}
+	}
+}

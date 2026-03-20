@@ -1,0 +1,275 @@
+// createLiveRoomModal.module.scss — Purple premium modal
+
+$purple: #7c3aed;
+$purple-light: #a78bfa;
+$purple-glow: rgba(124, 58, 237, 0.4);
+$purple-soft: rgba(124, 58, 237, 0.1);
+$purple-border: rgba(124, 58, 237, 0.3);
+$indigo: #4338ca;
+$red: #ef4444;
+$green: #10b981;
+
+$bg: #0f0f1a;
+$surface: #16162a;
+$surface2: #1e1e35;
+$border: rgba(255, 255, 255, 0.08);
+$text: #f1f0ff;
+$text-mid: #a09cc0;
+$text-dim: #6b6896;
+
+$font: 'DM Sans', 'Inter', system-ui, sans-serif;
+
+// ── Backdrop ─────────────────────────────────────────────────────
+.backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 15, 0.85);
+    backdrop-filter: blur(6px);
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+// ── Modal ─────────────────────────────────────────────────────────
+.modal {
+    background: $surface;
+    border: 1px solid $purple-border;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 460px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6), 0 0 60px rgba(124, 58, 237, 0.15);
+    animation: slideUp 0.25s ease;
+    font-family: $font;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+}
+
+// ── Close button ──────────────────────────────────────────────────
+.closeBtn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid $border;
+    color: $text-mid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s;
+    z-index: 2;
+
+    &:hover { background: rgba(255,255,255,0.12); color: $text; }
+}
+
+// ── Header ─────────────────────────────────────────────────────────
+.header {
+    position: relative;
+    text-align: center;
+    padding: 44px 32px 28px;
+    overflow: hidden;
+
+    h2 {
+        font-size: 1.35rem;
+        font-weight: 800;
+        color: $text;
+        margin: 16px 0 6px;
+    }
+
+    p {
+        font-size: 0.85rem;
+        color: $text-mid;
+        margin: 0;
+    }
+}
+
+.headerGlow {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(124, 58, 237, 0.2) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.headerIcon {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, $purple, $indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: #fff;
+    margin: 0 auto;
+    box-shadow: 0 8px 28px $purple-glow;
+}
+
+.courseName {
+    color: $purple-light;
+    font-weight: 600;
+}
+
+// ── Feature pills ─────────────────────────────────────────────────
+.features {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 24px 24px;
+    flex-wrap: wrap;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: $purple-soft;
+    border: 1px solid $purple-border;
+    color: $purple-light;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+
+    svg { font-size: 0.65rem; }
+}
+
+// ── Body ──────────────────────────────────────────────────────────
+.body {
+    padding: 0 28px 24px;
+}
+
+.label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: $text-mid;
+    margin-bottom: 8px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.input {
+    width: 100%;
+    background: $surface2;
+    border: 1.5px solid $border;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    color: $text;
+    font-family: $font;
+    transition: all 0.2s;
+    outline: none;
+
+    &:focus {
+        border-color: $purple;
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        background: darken($surface2, 3%);
+    }
+
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    &::placeholder { color: $text-dim; }
+}
+
+.hint {
+    margin-top: 12px;
+    font-size: 0.78rem;
+    color: $text-dim;
+    line-height: 1.5;
+    padding: 12px 14px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid $border;
+    border-radius: 8px;
+}
+
+.error {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba($red, 0.08);
+    border: 1px solid rgba($red, 0.25);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.82rem;
+}
+
+// ── Footer ─────────────────────────────────────────────────────────
+.footer {
+    display: flex;
+    gap: 10px;
+    padding: 0 28px 28px;
+}
+
+.cancelBtn {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid $border;
+    color: $text-mid;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: $font;
+
+    &:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: $text; }
+    &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.startBtn {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(135deg, $purple, $indigo);
+    border: none;
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-family: $font;
+    box-shadow: 0 4px 16px $purple-glow;
+    letter-spacing: 0.01em;
+
+    &:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 28px $purple-glow;
+    }
+
+    &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}

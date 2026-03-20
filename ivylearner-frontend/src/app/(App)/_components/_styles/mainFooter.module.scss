@@ -1,0 +1,289 @@
+
+// Colors
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$black: #000000;
+$dark-green: #24570f;
+$light-green: #b9e185;
+
+// Custom brand colors
+$primary: $primary-green;
+$secondary: $blue;
+$accent: $yellow;
+$text-dark: #1a1a1a;
+$text-light: #ffffff;
+$gray-light: #f5f7fa;
+$gray-medium: #e2e8f0;
+$gray-dark: #718096;
+$gradient-start: #00bf63;
+$gradient-end: #24570f;
+// Footer
+.footer {
+	background-color: #111827;
+	color: $text-light;
+	padding: 80px 0 30px;
+
+	.footerBrand {
+		.footerLogo {
+			font-size: 2rem;
+			font-weight: 800;
+			background: linear-gradient(to right, $primary-green, $light-green);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			margin-bottom: 1rem;
+			display: inline-block;
+		}
+
+		p {
+			color: rgba(255, 255, 255, 0.7);
+			font-size: 1rem;
+			line-height: 1.6;
+			margin-bottom: 1.5rem;
+		}
+
+		.socialIcons {
+			display: flex;
+			gap: 15px;
+
+			a {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				width: 40px;
+				height: 40px;
+				background-color: rgba(255, 255, 255, 0.1);
+				border-radius: 50%;
+				color: white;
+				transition: all 0.3s ease;
+
+				&:hover {
+					background-color: $primary-green;
+					transform: translateY(-3px);
+				}
+			}
+		}
+	}
+
+	.footerLinks {
+		h4 {
+			font-size: 1.2rem;
+			font-weight: 600;
+			margin-bottom: 1.5rem;
+			color: white;
+			position: relative;
+			display: inline-block;
+
+			&::after {
+				content: '';
+				position: absolute;
+				width: 30px;
+				height: 2px;
+				background-color: $primary-green;
+				bottom: -8px;
+				left: 0;
+			}
+		}
+
+		ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+
+			li {
+				margin-bottom: 12px;
+
+				a {
+					color: rgba(255, 255, 255, 0.7);
+					text-decoration: none;
+					transition: all 0.2s ease;
+					font-size: 0.95rem;
+
+					&:hover {
+						color: $primary-green;
+						padding-left: 5px;
+					}
+				}
+			}
+		}
+	}
+
+	.footerBottom {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-top: 40px;
+		margin-top: 60px;
+		border-top: 1px solid rgba(255, 255, 255, 0.1);
+		flex-wrap: wrap;
+		gap: 20px;
+
+		p {
+			color: rgba(255, 255, 255, 0.5);
+			font-size: 0.9rem;
+			margin: 0;
+		}
+
+		.footerBottomLinks {
+			display: flex;
+			gap: 20px;
+
+			a {
+				color: rgba(255, 255, 255, 0.5);
+				text-decoration: none;
+				font-size: 0.9rem;
+				transition: all 0.2s ease;
+
+				&:hover {
+					color: $primary-green;
+				}
+			}
+		}
+	}
+}
+
+// Media Queries for Responsiveness
+@media (max-width: 991px) {
+	.navbar {
+		padding: 10px 0;
+
+		.navButtons {
+			margin-top: 15px;
+			margin-left: 0;
+			width: 100%;
+			justify-content: center;
+		}
+	}
+
+	.heroSection {
+		padding: 150px 0 80px;
+
+		.heroContent {
+			text-align: center;
+			margin-bottom: 50px;
+
+			h1 {
+				font-size: 2.8rem;
+			}
+
+			p {
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.heroCta {
+				justify-content: center;
+			}
+
+			.statBadges {
+				justify-content: center;
+			}
+		}
+	}
+
+	.heroImageContainer {
+		.floatingCard {
+			right: 50%;
+			transform: translateX(50%);
+		}
+	}
+
+	.becomeInstructorSection {
+		.instructorImageContainer {
+			margin-bottom: 50px;
+		}
+
+		.instructorContent {
+			padding-left: 0;
+			text-align: center;
+
+			.instructorBenefits {
+				.benefitItem {
+					justify-content: center;
+				}
+			}
+		}
+	}
+}
+
+@media (max-width: 767px) {
+	.heroSection {
+		.heroContent {
+			h1 {
+				font-size: 2.3rem;
+			}
+		}
+	}
+
+	.sectionHeader {
+		h2 {
+			font-size: 2rem;
+		}
+	}
+
+	.testimonialCard {
+		margin-bottom: 30px;
+	}
+
+	.ctaSection {
+		.ctaCard {
+			padding: 40px 20px;
+
+			h2 {
+				font-size: 2rem;
+			}
+		}
+	}
+
+	.footer {
+		.footerBrand,
+		.footerLinks {
+			margin-bottom: 40px;
+		}
+
+		.footerBottom {
+			flex-direction: column;
+			text-align: center;
+
+			.footerBottomLinks {
+				justify-content: center;
+			}
+		}
+	}
+}
+
+@media (max-width: 575px) {
+	.heroSection {
+		.heroContent {
+			h1 {
+				font-size: 2rem;
+			}
+
+			.heroCta {
+				flex-direction: column;
+				width: 100%;
+
+				.primaryBtn,
+				.secondaryBtn {
+					width: 100%;
+				}
+			}
+
+			.statBadges {
+				flex-direction: column;
+				align-items: center;
+				gap: 15px;
+			}
+		}
+	}
+
+	.stepCard {
+		margin-bottom: 30px;
+	}
+
+	.partnersLogo {
+		.partnerLogo {
+			margin-bottom: 20px;
+		}
+	}
+}

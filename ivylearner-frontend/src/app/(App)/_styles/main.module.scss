@@ -1,0 +1,21 @@
+// Default styles
+
+// All colors:---------------------------------------------------
+$primary-green: #00bf63;
+$blue: #5271ff;
+$yellow: #f9c80e;
+$black: #000000;
+$red: #df3821;
+$dark-green: #24570f;
+$light-green: #b9e185;
+
+// Reusable button styles:-----------------------------------------------
+.actionButtonLarge {
+	min-width: 30px;
+	min-height: 30px;
+	background-color: $yellow;
+
+	&:hover {
+		background-color: inherit;
+	}
+}
