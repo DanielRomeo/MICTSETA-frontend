@@ -3,15 +3,15 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 
 // ── Data ──────────────────────────────────────────────────────────────────────
-// ── Course 2: Mathematics ─────────────────────────────────────
+// ── Course 3: Physics ─────────────────────────────────────────
 const QUESTIONS = [
-  { question: 'What is the value of π to 2 decimal places?', options: ['3.12', '3.41', '3.16', '3.14'], correct: 3 },
-  { question: 'What is the square root of 144?', options: ['11', '14', '13', '12'], correct: 3 },
-  { question: 'What is 15% of 200?', options: ['25', '20', '35', '30'], correct: 3 },
-  { question: 'If x² = 81, what is x?', options: ['7', '8', '10', '9'], correct: 3 },
-  { question: 'What is the sum of angles in a triangle?', options: ['90°', '360°', '270°', '180°'], correct: 3 },
-  { question: 'What is the result of 2³?', options: ['6', '9', '12', '8'], correct: 3 },
-  { question: 'What is the area formula for a circle?', options: ['2πr', 'πd', '2πr²', 'πr²'], correct: 3 },
+  { question: 'What is the SI unit of force?', options: ['Watt', 'Joule', 'Pascal', 'Newton'], correct: 3 },
+  { question: 'What is the speed of light in a vacuum?', options: ['150,000 km/s', '30,000 km/s', '3,000 km/s', '300,000 km/s'], correct: 3 },
+  { question: 'Which law states F = ma?', options: ["Newton's 1st Law", 'Ohm\'s Law', "Newton's 3rd Law", "Newton's 2nd Law"], correct: 3 },
+  { question: 'What type of energy does a moving object have?', options: ['Potential energy', 'Thermal energy', 'Chemical energy', 'Kinetic energy'], correct: 3 },
+  { question: 'What is the unit of electric current?', options: ['Volt', 'Ohm', 'Watt', 'Ampere'], correct: 3 },
+  { question: 'What is the acceleration due to gravity on Earth?', options: ['8.9 m/s²', '10.8 m/s²', '11.2 m/s²', '9.8 m/s²'], correct: 3 },
+  { question: 'What phenomenon makes the sky appear blue?', options: ['Reflection', 'Refraction', 'Diffraction', 'Rayleigh scattering'], correct: 3 },
 ];
 
 const SELF_DAMAGE = 20;   // penalty for shooting correct answer

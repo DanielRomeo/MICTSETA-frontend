@@ -1,199 +1,165 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Form, InputGroup, Button } from 'react-bootstrap';
-import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
-import ModernNavbar from '../_components/MainNavbar';
-import CourseCard from './courseCardComponent';
-import styles from '../_styles/courses/coursesComponent.module.scss';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { COURSES, Course } from './courseData';
+import styles from './coursesComponent.module.scss';
 
-const ITEMS_PER_PAGE = 9;
+// ── Difficulty badge ───────────────────────────────────────────────────────────
+function DiffBadge({ level }: { level: string }) {
+  const colors: Record<string, { bg: string; fg: string }> = {
+    Beginner:     { bg: 'rgba(16,185,129,0.12)', fg: '#059669' },
+    Intermediate: { bg: 'rgba(245,158,11,0.12)', fg: '#b45309' },
+    Advanced:     { bg: 'rgba(239,68,68,0.12)',  fg: '#dc2626' },
+  };
+  const c = colors[level] ?? colors.Beginner;
+  return (
+    <span style={{
+      fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em',
+      textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px',
+      background: c.bg, color: c.fg, border: `1px solid ${c.fg}30`,
+    }}>
+      {level}
+    </span>
+  );
+}
 
-const CoursesPage: React.FC = () => {
-	const [courses, setCourses] = useState<any[]>([]);
-	const [loading, setLoading] = useState(true);
-	const [searchTerm, setSearchTerm] = useState('');
-	const [selectedFilter, setSelectedFilter] = useState('all');
-	const [currentPage, setCurrentPage] = useState(1);
+// ── Game type badge ────────────────────────────────────────────────────────────
+function GameBadge({ type }: { type: 'fps' | 'dragon' }) {
+  return (
+    <span style={{
+      fontSize: '0.62rem', fontWeight: 600, letterSpacing: '0.08em',
+      textTransform: 'uppercase', padding: '3px 10px', borderRadius: '999px',
+      background: type === 'fps' ? 'rgba(220,38,38,0.1)' : 'rgba(124,58,237,0.1)',
+      color:      type === 'fps' ? '#dc2626'              : '#7c3aed',
+      border:     `1px solid ${type === 'fps' ? '#dc262630' : '#7c3aed30'}`,
+    }}>
+      {type === 'fps' ? '🎯 FPS Shooter' : '🐉 Dragon Boss'}
+    </span>
+  );
+}
 
-	useEffect(() => { fetchCourses(); }, []);
+// ── Course card ────────────────────────────────────────────────────────────────
+function CourseCard({ course }: { course: Course }) {
+  const router  = useRouter();
+  const [hov, setHov] = useState(false);
 
-	const fetchCourses = async () => {
-		try {
-			setLoading(true);
-			const response = await fetch('/api/courses');
-			if (!response.ok) throw new Error('Failed to fetch courses');
-			const data = await response.json();
-			// Backend already filters published — but keep client guard too
-			const list = (data.data || data || []).filter((c: any) => c.isPublished);
-			setCourses(list);
-		} catch (error) {
-			console.error('Error fetching courses:', error);
-			setCourses([]);
-		} finally {
-			setLoading(false);
-		}
-	};
+  return (
+    <div
+      className={styles.card}
+      style={{ '--card-color': course.color, '--card-light': course.colorLight } as React.CSSProperties}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      onClick={() => router.push(course.route)}
+    >
+      {/* Top color stripe */}
+      <div className={styles.cardStripe} style={{ background: course.color }} />
 
-	const filteredCourses = courses.filter((course) => {
-		const matchesSearch =
-			course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-			course.shortDescription?.toLowerCase().includes(searchTerm.toLowerCase());
+      {/* Icon */}
+      <div className={styles.cardIcon} style={{ background: course.colorLight }}>
+        <span>{course.icon}</span>
+      </div>
 
-		let matchesFilter = true;
-		if (selectedFilter === 'free') matchesFilter = course.price === 0 || !course.price;
-		else if (selectedFilter === 'paid') matchesFilter = course.price > 0;
+      {/* Badges */}
+      <div className={styles.cardBadges}>
+        <GameBadge type={course.gameType} />
+        <DiffBadge level={course.difficulty} />
+      </div>
 
-		return matchesSearch && matchesFilter;
-	});
+      {/* Title + description */}
+      <h3 className={styles.cardTitle}>{course.title}</h3>
+      <p className={styles.cardDesc}>{course.description}</p>
 
-	const totalPages = Math.ceil(filteredCourses.length / ITEMS_PER_PAGE);
-	const currentCourses = filteredCourses.slice(
-		(currentPage - 1) * ITEMS_PER_PAGE,
-		currentPage * ITEMS_PER_PAGE
-	);
+      {/* Meta row */}
+      <div className={styles.cardMeta}>
+        <span className={styles.metaItem}>📚 {course.lessons} Lessons</span>
+        <span className={styles.metaItem}>⚡ {course.xpReward} XP</span>
+        <span className={styles.metaItem}>{course.subject}</span>
+      </div>
 
-	useEffect(() => { setCurrentPage(1); }, [searchTerm, selectedFilter]);
+      {/* CTA */}
+      <button
+        className={styles.cardBtn}
+        style={{
+          background:  hov ? course.color : 'transparent',
+          borderColor: course.color,
+          color:       hov ? '#fff'        : course.color,
+        }}
+      >
+        {course.gameType === 'fps' ? '🎯 Enter Battle' : '🐉 Face the Dragon'} →
+      </button>
+    </div>
+  );
+}
 
-	const handlePageChange = (page: number) => {
-		setCurrentPage(page);
-		window.scrollTo({ top: 0, behavior: 'smooth' });
-	};
+// ── Page ───────────────────────────────────────────────────────────────────────
+export default function CoursesComponent() {
+  const [filter, setFilter] = useState<'all' | 'fps' | 'dragon'>('all');
 
-	const parseTags = (tags: any): string[] => {
-		if (!tags) return [];
-		if (Array.isArray(tags)) return tags;
-		try { return JSON.parse(tags); } catch { return []; }
-	};
+  const filtered = filter === 'all' ? COURSES : COURSES.filter(c => c.gameType === filter);
 
-	return (
-		<div className={styles.coursesPage}>
-			<ModernNavbar />
+  return (
+    <div className={styles.root}>
+      <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-			<div className={styles.heroSection}>
-				<Container>
-					<div className={styles.heroContent}>
-						<h1>Explore Our Courses</h1>
-						<p>Discover world-class courses taught by industry experts</p>
-					</div>
-				</Container>
-			</div>
+      {/* ── Header ── */}
+      <div className={styles.header}>
+        <div className={styles.headerInner}>
+          <span className={styles.eyebrow}>⚔ Choose Your Battle</span>
+          <h1 className={styles.title}>
+            Pick a course.<br />
+            <em>Slay the knowledge.</em>
+          </h1>
+          <p className={styles.sub}>
+            6 subjects. 2 game modes. One goal — beat the boss and prove you know your stuff.
+          </p>
 
-			<div className={styles.filterSection}>
-				<Container>
-					<Row className="g-3">
-						<Col md={8}>
-							<InputGroup className={styles.searchBox}>
-								<InputGroup.Text className={styles.searchIcon}>
-									<Search size={20} />
-								</InputGroup.Text>
-								<Form.Control
-									placeholder="Search courses..."
-									value={searchTerm}
-									onChange={(e) => setSearchTerm(e.target.value)}
-									className={styles.searchInput}
-								/>
-							</InputGroup>
-						</Col>
-						<Col md={4}>
-							<Form.Select
-								value={selectedFilter}
-								onChange={(e) => setSelectedFilter(e.target.value)}
-								className={styles.filterSelect}
-							>
-								<option value="all">All Courses</option>
-								<option value="free">Free Courses</option>
-								<option value="paid">Paid Courses</option>
-							</Form.Select>
-						</Col>
-					</Row>
-					<div className={styles.resultsInfo}>
-						<p>
-							Showing <strong>{currentCourses.length}</strong> of{' '}
-							<strong>{filteredCourses.length}</strong> courses
-						</p>
-					</div>
-				</Container>
-			</div>
+          {/* Filter tabs */}
+          <div className={styles.filters}>
+            {(['all', 'fps', 'dragon'] as const).map(f => (
+              <button
+                key={f}
+                className={`${styles.filterBtn} ${filter === f ? styles.filterActive : ''}`}
+                onClick={() => setFilter(f)}
+              >
+                {f === 'all' ? '🎮 All Courses' : f === 'fps' ? '🎯 FPS Shooter' : '🐉 Dragon Boss'}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
-			<div className={styles.coursesSection}>
-				<Container>
-					{loading ? (
-						<div className={styles.loading}>
-							<div className={styles.spinner}></div>
-							<p>Loading courses...</p>
-						</div>
-					) : currentCourses.length > 0 ? (
-						<>
-							<Row className="g-4">
-								{currentCourses.map((course) => (
-									<Col key={course.id} lg={4} md={6} sm={12}>
-										<CourseCard
-											id={course.id}
-											title={course.title}
-											shortDescription={course.shortDescription || course.description}
-											duration={course.durationWeeks ? `${course.durationWeeks} weeks` : undefined}
-											// Pass the real instructors array from the backend
-											instructor={course.instructors || []}
-											price={course.price || 0}
-											level={course.level || 'beginner'}
-											tags={parseTags(course.tags)}
-											certificateAvailable={course.certificateAvailable || false}
-											language={course.language || 'English'}
-											enrollmentCount={course.enrollmentCount || 0}
-											thumbnailUrl={course.thumbnailUrl}
-											slug={course.slug}
-										/>
-									</Col>
-								))}
-							</Row>
+      {/* ── Stats bar ── */}
+      <div className={styles.statsBar}>
+        {[
+          { icon: '📚', label: '6 Courses', sub: 'Across 6 subjects' },
+          { icon: '🎯', label: '3 FPS Games', sub: 'Shoot wrong answers' },
+          { icon: '🐉', label: '3 Dragon Bosses', sub: 'Classic quiz battle' },
+          { icon: '⚡', label: 'Up to 200 XP', sub: 'Per course clear' },
+        ].map((s, i) => (
+          <div key={i} className={styles.statItem}>
+            <span className={styles.statIcon}>{s.icon}</span>
+            <span className={styles.statLabel}>{s.label}</span>
+            <span className={styles.statSub}>{s.sub}</span>
+          </div>
+        ))}
+      </div>
 
-							{totalPages > 1 && (
-								<div className={styles.pagination}>
-									<Button
-										variant="outline-secondary"
-										disabled={currentPage === 1}
-										onClick={() => handlePageChange(currentPage - 1)}
-										className={styles.paginationButton}
-									>
-										<ChevronLeft size={20} /> Previous
-									</Button>
+      {/* ── Grid ── */}
+      <div className={styles.grid}>
+        {filtered.map(course => (
+          <CourseCard key={course.id} course={course} />
+        ))}
+      </div>
 
-									<div className={styles.pageNumbers}>
-										{Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-											<Button
-												key={page}
-												variant={currentPage === page ? 'success' : 'outline-secondary'}
-												onClick={() => handlePageChange(page)}
-												className={styles.pageNumber}
-											>
-												{page}
-											</Button>
-										))}
-									</div>
-
-									<Button
-										variant="outline-secondary"
-										disabled={currentPage === totalPages}
-										onClick={() => handlePageChange(currentPage + 1)}
-										className={styles.paginationButton}
-									>
-										Next <ChevronRight size={20} />
-									</Button>
-								</div>
-							)}
-						</>
-					) : (
-						<div className={styles.noResults}>
-							<Filter size={64} />
-							<h3>No courses found</h3>
-							<p>Try adjusting your search or filter to find what you're looking for.</p>
-						</div>
-					)}
-				</Container>
-			</div>
-		</div>
-	);
-};
-
-export default CoursesPage;
+      {/* ── Footer ── */}
+      <footer className={styles.footer}>
+        <span className={styles.footerBrand}>
+          Macbase<span>Dragon</span>Slayer Learner
+        </span>
+        <span className={styles.footerCredit}>
+          Developed by Daniel Mamphekgo @ MERTCITA HACKATHON
+        </span>
+      </footer>
+    </div>
+  );
+}
