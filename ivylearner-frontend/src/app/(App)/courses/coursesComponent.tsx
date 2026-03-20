@@ -21,6 +21,7 @@ const CoursesPage: React.FC = () => {
 		try {
 			setLoading(true);
 			const response = await fetch('/api/courses');
+			console.log('Fetch courses response:', response);
 			if (!response.ok) throw new Error('Failed to fetch courses');
 			const data = await response.json();
 			// Backend already filters published — but keep client guard too

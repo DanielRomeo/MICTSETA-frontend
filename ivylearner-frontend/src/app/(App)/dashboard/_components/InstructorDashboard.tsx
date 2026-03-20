@@ -38,21 +38,21 @@ const InstructorDashboard = () => {
 			setRecentCourses([
 				{
 					id: 1,
-					title: 'React Masterclass',
-					students: 145,
-					revenue: 7250,
+					title: 'Algorithms and data structures',
+					students: 1,
+					revenue: 0,
 				},
 				{
 					id: 2,
 					title: 'Advanced TypeScript',
-					students: 98,
-					revenue: 4900,
+					students: 0,
+					revenue: 0,
 				},
 				{
 					id: 3,
 					title: 'Node.js Backend Development',
-					students: 99,
-					revenue: 3270,
+					students: 0,
+					revenue: 0,
 				},
 			]);
 		} catch (error) {

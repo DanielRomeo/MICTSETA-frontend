@@ -137,9 +137,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			// navigate based on role:
 			// Navigate based on role
 			if (userData.role === 'lecturer' || userData.role === 'instructor') {
-				router.push('/dashboard');
+				router.push('/courses');
 			} else {
-				router.push('/dashboard');
+				router.push('/courses');
 			}
 		} catch (error) {
 			console.error('Login error:', error);

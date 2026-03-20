@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 		},
 		body: JSON.stringify(body),
 	});
-	console.log('API response status:', response.status);
+    console.log('API response status:', response.status);
 
 	const data = await response.json();
 	return NextResponse.json(data);
@@ -26,6 +26,7 @@ export async function POST(request: Request) {
 
 
 export async function GET(request: Request) {
+    console.log('Received GET request for courses');
     try {
         const authHeader = request.headers.get('Authorization');
         
@@ -35,8 +36,11 @@ export async function GET(request: Request) {
                 'Content-Type': 'application/json',
             },
         });
+            console.log('API response status:', response.status);
+
         
         if (!response.ok) {
+            console.error('Error fetching courses:', response.status, await response.text());
             const errorMessage = await response.text();
             return NextResponse.json(
                 { error: `Error fetching courses: ${errorMessage}` },

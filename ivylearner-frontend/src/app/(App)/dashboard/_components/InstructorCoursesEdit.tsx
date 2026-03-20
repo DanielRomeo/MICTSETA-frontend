@@ -111,7 +111,7 @@ const EditCourse = () => {
     };
 
     const handlePublishToggle = async (checked: boolean) => {
-        if (checked && lessons.length < 5) {
+        if (checked && lessons.length < 1) {
             alert('Cannot publish course with fewer than 5 lessons.');
             return;
         }
