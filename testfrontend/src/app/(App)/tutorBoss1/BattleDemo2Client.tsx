@@ -9,24 +9,14 @@ import * as THREE from 'three';
 // DATA
 // ─────────────────────────────────────────────────────────────────────────────
 const DEMO_QUESTIONS = [
-  { question: 'What does HTML stand for?', optionA: 'Hyperlinks and Text Markup Language', optionB: 'HyperText Markup Language', optionC: 'Home Tool Markup Language', optionD: 'Hyper Transfer Markup Language', correctAnswer: 'B' as const },
-  { question: 'Which tag creates a hyperlink?', optionA: '<link>', optionB: '<url>', optionC: '<a>', optionD: '<href>', correctAnswer: 'C' as const },
-  { question: 'What CSS property changes text color?', optionA: 'text-color', optionB: 'font-color', optionC: 'foreground-color', optionD: 'color', correctAnswer: 'D' as const },
-  { question: 'Which controls space OUTSIDE an element?', optionA: 'padding', optionB: 'spacing', optionC: 'margin', optionD: 'border', correctAnswer: 'C' as const },
-  { question: 'What does DOM stand for?', optionA: 'Document Object Model', optionB: 'Data Output Manager', optionC: 'Dynamic Object Module', optionD: 'Document Order Map', correctAnswer: 'A' as const },
-  { question: 'Which JS method selects by ID?', optionA: 'document.getElement()', optionB: 'document.querySelector()', optionC: 'document.findById()', optionD: 'document.getElementById()', correctAnswer: 'D' as const },
-  { question: 'What does CSS stand for?', optionA: 'Creative Style Sheets', optionB: 'Cascading Style Sheets', optionC: 'Computer Style Syntax', optionD: 'Coded Style System', correctAnswer: 'B' as const },
+  { question: 'What does "habeas corpus" mean?', optionA: 'Right to remain silent', optionB: 'You must have the body', optionC: 'Right to an attorney', optionD: 'Trial by jury', correctAnswer: 'B' as const },
+  { question: 'What is the presumption of innocence?', optionA: 'Guilty until proven innocent', optionB: 'No presumption either way', optionC: 'Innocent until proven guilty', optionD: 'Innocent if no evidence', correctAnswer: 'C' as const },
+  { question: 'What is a "tort" in law?', optionA: 'A criminal offence', optionB: 'A legal contract', optionC: 'A court order', optionD: 'A civil wrong causing harm', correctAnswer: 'D' as const },
+  { question: 'What does "pro bono" mean?', optionA: 'In favour of evidence', optionB: 'Against the prosecution', optionC: 'For the public good / free legal work', optionD: 'For monetary gain', correctAnswer: 'C' as const },
+  { question: 'What is "mens rea"?', optionA: 'The guilty mind / criminal intent', optionB: 'The physical act of a crime', optionC: 'The evidence presented', optionD: 'The jury\'s verdict', correctAnswer: 'A' as const },
+  { question: 'What is a subpoena?', optionA: 'A type of verdict', optionB: 'A court fee', optionC: 'A defence strategy', optionD: 'A legal order to appear or produce evidence', correctAnswer: 'D' as const },
+  { question: 'What does "prima facie" mean?', optionA: 'Beyond reasonable doubt', optionB: 'At first appearance / on the face of it', optionC: 'Without prejudice', optionD: 'In good faith', correctAnswer: 'B' as const },
 ];
-// // ── Course 4: Law ─────────────────────────────────────────────
-// const QUESTIONS = [
-//   { question: 'What does "habeas corpus" mean?', options: ['Right to remain silent', 'Right to an attorney', 'Trial by jury', 'You must have the body'], correct: 3 },
-//   { question: 'What is the presumption of innocence?', options: ['Guilty until proven innocent', 'No presumption either way', 'Innocent if no evidence', 'Innocent until proven guilty'], correct: 3 },
-//   { question: 'What is a "tort" in law?', options: ['A criminal offence', 'A legal contract', 'A court order', 'A civil wrong causing harm'], correct: 3 },
-//   { question: 'What does "pro bono" mean?', options: ['In favour of evidence', 'Against the prosecution', 'For monetary gain', 'For the public good / free legal work'], correct: 3 },
-//   { question: 'What is "mens rea"?', options: ['The physical act of a crime', 'The evidence presented', 'The jury\'s verdict', 'The guilty mind / criminal intent'], correct: 3 },
-//   { question: 'What is a subpoena?', options: ['A type of verdict', 'A court fee', 'A defence strategy', 'A legal order to appear or produce evidence'], correct: 3 },
-//   { question: 'What does "prima facie" mean?', options: ['Beyond reasonable doubt', 'Without prejudice', 'In good faith', 'At first appearance / on the face of it'], correct: 3 },
-// ];
 
 const MAX_PLAYER_HP  = 100;
 const CORRECT_DAMAGE = 20;

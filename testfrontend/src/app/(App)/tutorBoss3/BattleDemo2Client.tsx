@@ -8,14 +8,15 @@ import * as THREE from 'three';
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Course 6: English ─────────────────────────────────────────
 const DEMO_QUESTIONS = [
-  { question: 'What does HTML stand for?', optionA: 'Hyperlinks and Text Markup Language', optionB: 'HyperText Markup Language', optionC: 'Home Tool Markup Language', optionD: 'Hyper Transfer Markup Language', correctAnswer: 'B' as const },
-  { question: 'Which tag creates a hyperlink?', optionA: '<link>', optionB: '<url>', optionC: '<a>', optionD: '<href>', correctAnswer: 'C' as const },
-  { question: 'What CSS property changes text color?', optionA: 'text-color', optionB: 'font-color', optionC: 'foreground-color', optionD: 'color', correctAnswer: 'D' as const },
-  { question: 'Which controls space OUTSIDE an element?', optionA: 'padding', optionB: 'spacing', optionC: 'margin', optionD: 'border', correctAnswer: 'C' as const },
-  { question: 'What does DOM stand for?', optionA: 'Document Object Model', optionB: 'Data Output Manager', optionC: 'Dynamic Object Module', optionD: 'Document Order Map', correctAnswer: 'A' as const },
-  { question: 'Which JS method selects by ID?', optionA: 'document.getElement()', optionB: 'document.querySelector()', optionC: 'document.findById()', optionD: 'document.getElementById()', correctAnswer: 'D' as const },
-  { question: 'What does CSS stand for?', optionA: 'Creative Style Sheets', optionB: 'Cascading Style Sheets', optionC: 'Computer Style Syntax', optionD: 'Coded Style System', correctAnswer: 'B' as const },
+  { question: 'What is a synonym for "happy"?', optionA: 'Melancholy', optionB: 'Elated', optionC: 'Anxious', optionD: 'Weary', correctAnswer: 'B' as const },
+  { question: 'What is the plural of "criterion"?', optionA: 'Criterions', optionB: 'Criterium', optionC: 'Criterias', optionD: 'Criteria', correctAnswer: 'D' as const },
+  { question: 'Which uses the correct their/there/they\'re?', optionA: '"Their going to the mall"', optionB: '"There going to the mall"', optionC: '"They\'re going to the mall"', optionD: '"Theyre going to the mall"', correctAnswer: 'C' as const },
+  { question: 'What device is "the wind whispered through the trees"?', optionA: 'Simile', optionB: 'Metaphor', optionC: 'Hyperbole', optionD: 'Personification', correctAnswer: 'D' as const },
+  { question: 'What is the antonym of "benevolent"?', optionA: 'Generous', optionB: 'Malevolent', optionC: 'Indifferent', optionD: 'Charitable', correctAnswer: 'B' as const },
+  { question: 'Which word is a conjunction?', optionA: 'Quickly', optionB: 'Beautiful', optionC: 'Running', optionD: 'Although', correctAnswer: 'D' as const },
+  { question: 'Which is the correct spelling?', optionA: 'Accomodation', optionB: 'Acommodation', optionC: 'Acomodation', optionD: 'Accommodation', correctAnswer: 'D' as const },
 ];
 
 const MAX_PLAYER_HP  = 100;

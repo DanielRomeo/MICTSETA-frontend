@@ -8,14 +8,15 @@ import * as THREE from 'three';
 // ─────────────────────────────────────────────────────────────────────────────
 // DATA
 // ─────────────────────────────────────────────────────────────────────────────
+// ── Course 5: History ─────────────────────────────────────────
 const DEMO_QUESTIONS = [
-  { question: 'What does HTML stand for?', optionA: 'Hyperlinks and Text Markup Language', optionB: 'HyperText Markup Language', optionC: 'Home Tool Markup Language', optionD: 'Hyper Transfer Markup Language', correctAnswer: 'B' as const },
-  { question: 'Which tag creates a hyperlink?', optionA: '<link>', optionB: '<url>', optionC: '<a>', optionD: '<href>', correctAnswer: 'C' as const },
-  { question: 'What CSS property changes text color?', optionA: 'text-color', optionB: 'font-color', optionC: 'foreground-color', optionD: 'color', correctAnswer: 'D' as const },
-  { question: 'Which controls space OUTSIDE an element?', optionA: 'padding', optionB: 'spacing', optionC: 'margin', optionD: 'border', correctAnswer: 'C' as const },
-  { question: 'What does DOM stand for?', optionA: 'Document Object Model', optionB: 'Data Output Manager', optionC: 'Dynamic Object Module', optionD: 'Document Order Map', correctAnswer: 'A' as const },
-  { question: 'Which JS method selects by ID?', optionA: 'document.getElement()', optionB: 'document.querySelector()', optionC: 'document.findById()', optionD: 'document.getElementById()', correctAnswer: 'D' as const },
-  { question: 'What does CSS stand for?', optionA: 'Creative Style Sheets', optionB: 'Cascading Style Sheets', optionC: 'Computer Style Syntax', optionD: 'Coded Style System', correctAnswer: 'B' as const },
+  { question: 'In which year did World War II end?', optionA: '1943', optionB: '1944', optionC: '1947', optionD: '1945', correctAnswer: 'D' as const },
+  { question: 'Who was the first President of the United States?', optionA: 'John Adams', optionB: 'Benjamin Franklin', optionC: 'George Washington', optionD: 'Thomas Jefferson', correctAnswer: 'C' as const },
+  { question: 'Which empire built the Colosseum in Rome?', optionA: 'Greek Empire', optionB: 'Ottoman Empire', optionC: 'Byzantine Empire', optionD: 'Roman Empire', correctAnswer: 'D' as const },
+  { question: 'What year did South Africa hold its first democratic elections?', optionA: '1990', optionB: '1992', optionC: '1996', optionD: '1994', correctAnswer: 'D' as const },
+  { question: 'Who wrote the "I Have a Dream" speech?', optionA: 'Malcolm X', optionB: 'Barack Obama', optionC: 'Thurgood Marshall', optionD: 'Martin Luther King Jr.', correctAnswer: 'D' as const },
+  { question: 'What was the first artificial satellite launched into space?', optionA: 'Voyager 1', optionB: 'Apollo 11', optionC: 'Sputnik 1', optionD: 'Explorer 1', correctAnswer: 'C' as const },
+  { question: 'Which country was Nelson Mandela president of?', optionA: 'Zimbabwe', optionB: 'Nigeria', optionC: 'Kenya', optionD: 'South Africa', correctAnswer: 'D' as const },
 ];
 
 const MAX_PLAYER_HP  = 100;
